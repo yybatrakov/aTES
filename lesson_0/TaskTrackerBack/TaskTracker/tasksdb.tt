@@ -1,0 +1,114 @@
+﻿<#@ template language="C#" debug="True" hostSpecific="True"                            #>
+<#@ output extension=".generated.cs"                                                   #>
+<#@ include file="$(LinqToDBT4PostgreSQLTemplatesPath)LinqToDB.PostgreSQL.Tools.ttinclude" #>
+<#@ include file="$(LinqToDBT4PostgreSQLTemplatesPath)PluralizationService.ttinclude"      #>
+<# //@ include file="$(ProjectDir)LinqToDB.Templates\LinqToDB.PostgreSQL.Tools.ttinclude" #>
+<# //@ include file="$(ProjectDir)LinqToDB.Templates\PluralizationService.ttinclude"      #>
+<#
+	/*
+		1. Create new *.tt file (e.g. MyDatabase.tt) in a folder where you would like to generate your data model
+		   and copy content from this file to it. For example:
+
+			MyProject
+				DataModels
+					MyDatabase.tt
+
+		2. Modify the connection settings below to connect to your database.
+
+		3. Add connection string to the web/app.config file:
+
+			<connectionStrings>
+				<add name="MyDatabase" providerName="System.Data.SqlClient"
+					connectionString="Data Source=.;Database=MyDatabase;User Id=User;Password=TestPassword;" />
+			</connectionStrings>
+
+		4. To access your database use the following code:
+
+			using (var db = new MyDatabaseDB())
+			{
+				var q =
+					from c in db.Customers
+					select c;
+
+				foreach (var c in q)
+					Console.WriteLine(c.ContactName);
+			}
+
+		5. See more at https://linq2db.github.io/articles/T4.html
+
+		If you need to use the Microsoft.SqlServer.Types namespace, install the Microsoft.SqlServer.Types nuget,
+		and replace the following include at the top of this file:
+
+			"$(ProjectDir)LinqToDB.Templates\LinqToDB.SqlServer.Tools.ttinclude"
+
+		with
+
+			"$(ProjectDir)LinqToDB.Templates\LinqToDB.SqlServer.SqlTypes.Tools.ttinclude"
+	*/
+
+	NamespaceName = "tasks.Api.Data";
+	DataContextName = "tasksDb";
+	GetSchemaOptions.IncludedSchemas = new[] {"tasks"};
+	GetSchemaOptions.GetProcedures = false;
+	GenerateConstructors = false;
+	GenerateFindExtensions = false;
+	GenerateAssociations          = false;
+	GenerateAssociationExtensions = false;
+
+
+	LoadPostgreSQLMetadata("localhost", "5432", "popug", "popug", "popug");
+
+	Model.Usings.Add("LinqToDB.DataProvider.PostgreSQL");
+	Model.Usings.Add("Microsoft.Extensions.Configuration");
+	Model.Usings.Add("Newtonsoft.Json");
+	Model.Usings.Add("System.Collections.Generic");
+
+	// Создаём конструктор
+	DataContextObject.Members.Add(new Method(null, DataContextObject.Name, new Func<string>[] { () => "IConfiguration configuration" },
+	()=>new[] {"//InitJsonMappingSchema();"})
+    {
+        AfterSignature = { ": base(new PostgreSQLDataProvider(PostgreSQLVersion.v95), configuration.GetConnectionString(nameof(" + DataContextObject.Name + ")))" } 
+    });
+
+    DataContextObject.Members.Add(new Method(null, DataContextObject.Name, new Func<string>[] { () => "string connectionString"},
+	()=>new[] {"//InitJsonMappingSchema();"})
+    {
+        AfterSignature = { ": base(new PostgreSQLDataProvider(PostgreSQLVersion.v95), connectionString)" } 
+    });
+
+	//GetColumn("lkd_api.tokens","external_keys").Type = "List<string>";
+	//GetColumn("lkd_api.tokens","external_keys").Attributes.Add(new Attribute("DataType", "DataType.BinaryJson"));
+
+	//GenerateMapping();
+
+	var oldBeforeGenerateModel = BeforeGenerateModel;
+	BeforeGenerateModel = () =>
+	{
+		oldBeforeGenerateModel();
+
+		foreach (Property prop in GetTreeNodes(Model).OfType<Property>().Where(p => p.Type.StartsWith("ITable<")))
+		{
+			prop.IsVirtual = true;
+		}
+	};
+
+	GenerateModel();
+#>
+<#+
+
+void GenerateMapping()
+{
+	var initMappingSchema = new Method(()=>"void", "InitJsonMappingSchema", null, null);
+	
+	initMappingSchema.BodyBuilders.Add(()=>new[]{
+	"MappingSchema.Default.GetFluentMappingBuilder() ",
+    ".Entity<Token>() ",
+    "	.Property(e => e.ExternalKeys) ",
+    "	.HasConversion( ",
+	"		x => JsonConvert.SerializeObject(x), ",
+	"		x => JsonConvert.DeserializeObject<List<string>>(x));"
+	});
+	
+	DataContextObject.Members.Add(initMappingSchema);
+}
+#>

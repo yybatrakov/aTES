@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  accounting:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "32001:80"
+  tasktracker:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "32002:80"
+  authservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "32000:80"

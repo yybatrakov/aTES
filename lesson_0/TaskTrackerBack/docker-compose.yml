@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+  accounting:
+    image: ${DOCKER_REGISTRY-}accounting
+    build:
+      context: .
+      dockerfile: Accounting/Dockerfile
+  tasktracker:
+    image: ${DOCKER_REGISTRY-}tasktracker
+    build:
+      context: .
+      dockerfile: TaskTracker/Dockerfile
+  authservice:
+    image: ${DOCKER_REGISTRY-}authservice
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+  postgres:
+    image: postgres:13.3
+    environment:
+        POSTGRES_DB: "popug"
+        POSTGRES_USER: "popug"
+        POSTGRES_PASSWORD: "popug"
+    ports:
+        - "5432:5432"
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "Yes"
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka:latest
+    sysctls:
+      - net.ipv4.vs.conn_reuse_mode=0
+      - net.ipv4.vs.expire_nodest_conn=1
+    ports:
+      - 9092:9092
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      HOSTNAME: "kafka"
+      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+      KAFKA_BROKER_ID: "1000"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+      KAFKA_LOG_RETENTION_HOURS: "24"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui
+    environment:
+        KAFKA_CLUSTERS_0_NAME : localhost
+        KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS : kafka:9092
+        KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    ports:
+        - 9000:8080
