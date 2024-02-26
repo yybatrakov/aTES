@@ -51,7 +51,7 @@ namespace AuthorizationServer
                         ValidateIssuer = true,
                         ValidateAudience = false,
                         ValidateLifetime = true,
-                        ValidIssuer = "ebrahim.auth.com",
+                        ValidIssuer = "popug.auth.com",
                         ClockSkew = TimeSpan.Zero
                     };
                     options.Events = new JwtBearerEvents
@@ -78,11 +78,11 @@ namespace AuthorizationServer
             //I will configure password only for demo purpose only.
             var identity = services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                var passwordManager = options.Password;           
+                var passwordManager = options.Password;
                 passwordManager.RequireDigit = false;
                 passwordManager.RequireLowercase = false;
                 passwordManager.RequireNonAlphanumeric = false;
-                passwordManager.RequireUppercase = false;            
+                passwordManager.RequireUppercase = false;
             })
             .AddEntityFrameworkStores<DataContext>()
             .AddUserManager<UserManager<IdentityUser>>()
