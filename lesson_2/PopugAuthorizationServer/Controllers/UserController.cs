@@ -1,13 +1,19 @@
 ﻿using AuthorizationServer.Models;
 using AuthorizationServer.Persistence;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Mxm.Kafka;
+using PopugCommon;
+using PopugCommon.KafkaMessages;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,6 +51,14 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
+            Kafka.Produce("Users", identity.UserName, (new UserMessage() { 
+                MessageId = Guid.NewGuid().ToString(),
+                UserName = identity.UserName,
+                UserRole = role,
+                Operation = CudOperation.Add,
+                OpertionDate = DateTime.Now
+            }).ToJson());
+
             return Ok(result);
         }
 
@@ -55,6 +69,13 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
+            Kafka.Produce("Users", identity.UserName, (new UserMessage()
+            {
+                MessageId = Guid.NewGuid().ToString(),
+                UserName = identity.UserName,
+                Operation = CudOperation.Delete,
+                OpertionDate = DateTime.Now
+            }).ToJson());
 
             return Ok(result);
         }
