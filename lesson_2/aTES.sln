@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopugAuthorizationServer", "PopugAuthorizationServer\PopugAuthorizationServer.csproj", "{05873D38-DFE7-4CC7-9F49-FA492FBDA53E}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{30B59BB5-9F18-438A-83B4-B73738C57161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{05873D38-DFE7-4CC7-9F49-FA492FBDA53E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05873D38-DFE7-4CC7-9F49-FA492FBDA53E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05873D38-DFE7-4CC7-9F49-FA492FBDA53E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30B59BB5-9F18-438A-83B4-B73738C57161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30B59BB5-9F18-438A-83B4-B73738C57161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30B59BB5-9F18-438A-83B4-B73738C57161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30B59BB5-9F18-438A-83B4-B73738C57161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
