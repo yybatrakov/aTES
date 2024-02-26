@@ -35,6 +35,8 @@
             this.dataContext = dataContext;
             this.tokenGenerator = tokenGenerator;
         }
+
+        //https://localhost:44370/oauth/authorize?client_id=BF2C6EC3-338A-4EE3-9D97-F98A2A559186&scope=user%20phone&response_type=code&redirect_uri=https%3A%2F%2Flocalhost%3A44336%2Foauth%2Fcallback&code_challenge=Pz1aQzMaQj4KEbMTKVZZEpv3j6YJ5cL92nqE2RddU-0&code_challenge_method=S256&state=CfDJ8JM3PxjMXlxBkQqvAKdxJ3h_PxrV1ozJEMJjXg9XQx6x31RQE3qn-GFcemmVlfTVmR7NT7nMcTWjpbZZx-yObKMyQ0xF2gsVgl0Vn0AIO043aLJnwnQLCkdygiEH1wsVYb3ukRypGdW1dJPK_G0LeqGu1S9SvPwT9R6yfWKskF9n_1tnTwkoAZdQyeSnYqeZwVpGe6xa1Gyhrr9xLnXWl68KV4UDB-hBsHBJPtJCBuKiFNNGNoEcJaLzLronaTV6U1Zf6Mo71Y29A5faH6o7wTHFawqhFbrF-7GiEI-s_ICE
         [HttpGet]
         public async Task<IActionResult> AuthorizeAsync(
             string client_id,
@@ -71,7 +73,7 @@
                 }
               
             }
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
 
 
         }
@@ -83,32 +85,16 @@
             string scope
             )
         {
-            var user = await dataContext.Users
-                .Where(x => x.Email == authLogin.Email)
-                .AsNoTracking().FirstOrDefaultAsync();
-
-            var success = await signInManager.CheckPasswordSignInAsync(user, authLogin.Password,false);
-            if (success.Succeeded)
+            string auth_code = Guid.NewGuid().ToString();
+            var queryBuilder = new QueryBuilder
             {
-              
-                string auth_code = Guid.NewGuid().ToString();
-                var queryBuilder = new QueryBuilder
-                {
-                    { "code", auth_code },
-                    { "state", state },
-                    { "scope",scope }
-                };
-                StaticData.Scope = scope;
-                StaticData.CurrentUserName = user.UserName;
-                return Redirect($"{redirect_uri}{queryBuilder}");
-            }
-            else
-            {
-                TempData.Add("LoginError", "Email or Password is wrong");
-                return View("Authorize", authLogin);
-            }
-
-          
+                { "code", auth_code },
+                { "state", state },
+                { "scope",scope }
+            };
+            StaticData.Scope = scope;
+            StaticData.CurrentUserName = authLogin.Beak;
+            return Redirect($"{redirect_uri}{queryBuilder}");
         }
         public async Task<IActionResult> TokenAsync(
             string grant_type,
