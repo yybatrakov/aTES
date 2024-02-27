@@ -20,4 +20,5 @@ namespace PopugCommon.KafkaMessages
         Update = 2,
         Delete = 3
     }
+
 }

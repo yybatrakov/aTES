@@ -1,26 +1,15 @@
 ﻿namespace AuthorizationServer.Controllers
 {
-    using AuthorizationServer.AuthSchemes;
     using AuthorizationServer.Interfaces;
     using AuthorizationServer.Models;
     using AuthorizationServer.Persistence;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
+    using Microsoft.IdentityModel.JsonWebTokens;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-    using System.Security.Claims;
-    using System.Text;
     using System.Threading.Tasks;
 
     public class OAuthController : Controller
@@ -102,6 +91,7 @@
                 return View("Authorize", authLogin);
             }
         }
+        
         public async Task<IActionResult> TokenAsync(
             string grant_type,
             string code, 
@@ -125,19 +115,24 @@
                 {
                     access_token,
                     refresh_token,
-                    token_type = "bearer"
+                    token_type = "Bearer"
                 };
-                var responseJson = JsonConvert.SerializeObject(responseObject);
-                var responseBytes = Encoding.UTF8.GetBytes(responseJson);
+                //var responseJson = responseObject.ToJson();
+                //var responseBytes = Encoding.UTF8.GetBytes(responseJson);
 
-                await Response.Body.WriteAsync(responseBytes, 0, responseBytes.Length);
+                //await Response.Body.WriteAsync(responseBytes, 0, responseBytes.Length);
 
-                return Redirect(redirect_uri);
+                var handler = new JsonWebTokenHandler();
+                return Ok(responseObject);
+                //return new IActionResult( StatusCodes.Status302Found;
+                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status302Found, redirect_uri);
+                //return new RedirectResult()
+                //return Redirect(redirect_uri);
             }
             return View();
         }
-        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
+        [Route("oauth/validate")]
         public IActionResult ValidateAsync(string access_token)
         {
             
@@ -145,7 +140,6 @@
             return validation ? Ok() : Forbid();
 
         }
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("oauth/scope")]
         public IActionResult GetScope(string access_token)

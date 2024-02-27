@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using Confluent.Kafka;
 
-namespace Mxm.Kafka {
+namespace PopugCommon.Kafka
+{
 
     public class StringSerializer : ISerializer<string>
     {

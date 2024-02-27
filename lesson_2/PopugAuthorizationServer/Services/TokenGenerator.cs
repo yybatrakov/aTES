@@ -4,6 +4,7 @@
     using AuthorizationServer.Persistence;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.JsonWebTokens;
     using Microsoft.IdentityModel.Tokens;
     using System;
     using System.Collections.Generic;
@@ -30,7 +31,8 @@
             {
                 new Claim("_cuser",user.Id),
                 new Claim("_unid",user.UserName),
-                new Claim("scope",StaticData.Scope.Split(" ").Last())
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
             var userRoles = await userManager.GetRolesAsync(user);
             foreach (var role in userRoles)
@@ -46,13 +48,13 @@
                 SigningCredentials = credentials,
                 Subject = new ClaimsIdentity(claim),
                 Expires = DateTime.UtcNow.AddMinutes(30),
-                Issuer = "ebrahim.auth.com",
+                Issuer = "popugAuthorizationServer"
 
 
             };
-            var tokenHanlder = new JwtSecurityTokenHandler();
+            var tokenHanlder = new JsonWebTokenHandler();
             var securityToken = tokenHanlder.CreateToken(descriptor);
-            return tokenHanlder.WriteToken(securityToken);
+            return tokenHanlder.CreateToken(descriptor);
         }
 
 
@@ -72,16 +74,18 @@
                 var tokenHandler = new JwtSecurityTokenHandler()
                .ValidateToken(token, new TokenValidationParameters
                {
-                   IssuerSigningKey = key,
-                   SaveSigninToken = true,
-                   ValidateIssuer = true,
+                   ValidateIssuerSigningKey = false,
+                   ValidateIssuer = false,
                    ValidateAudience = false,
-                   ValidateLifetime = true,
-                   ValidIssuer = "ebrahim.auth.com",
-                   ClockSkew = TimeSpan.Zero
+                   SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+                   {
+                       var jwt = new JwtSecurityToken(token);
+
+                       return jwt;
+                   },
                }, out var securityToken);
 
-                return securityToken.Issuer == "ebrahim.auth.com";
+                return true;
             }
             catch (Exception ex) when(ex is SecurityTokenExpiredException)
             {

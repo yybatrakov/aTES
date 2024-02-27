@@ -5,7 +5,6 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>30b59bb5-9f18-438a-83b4-b73738c57161</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
     <DockerServiceName>popugauthorizationserver</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

@@ -1,25 +1,19 @@
 ﻿using AuthorizationServer.Models;
 using AuthorizationServer.Persistence;
-using Confluent.Kafka;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Mxm.Kafka;
-using PopugCommon;
+using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AuthorizationServer.Controllers
 {
-    
+
     public class UserController : Controller
     {
         private readonly DataContext dataContext;
@@ -30,17 +24,14 @@ namespace AuthorizationServer.Controllers
             this.dataContext = dataContext;
             this.userManager = userManager;
         }
-        [AcceptVerbs("Get")]
-        [HttpGet]
-        [Route("users/get")]
+        [HttpGet("users/get")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Get()
         {
             return Ok(dataContext.Users.ToListAsync());
         }
-
-        [AcceptVerbs("Post")]
-        [HttpPost]
-        [Route("users/add")]
+        [HttpPost("users/add")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Add(AuthUser user, string role)
         {
             var result = await userManager.CreateAsync(new IdentityUser
@@ -62,9 +53,8 @@ namespace AuthorizationServer.Controllers
             return Ok(result);
         }
 
-        [AcceptVerbs("Delete")]
-        [HttpDelete]
-        [Route("users/delete")]
+        [HttpDelete("users/delete")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Delete(AuthUser user)
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();

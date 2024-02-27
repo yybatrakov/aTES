@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: PopugAuthorizationServer/Dockerfile
+    ports:
+      - 52999:80
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:

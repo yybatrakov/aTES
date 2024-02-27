@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using static Newtonsoft.Json.JsonConvert;
 
-namespace Mxm.Kafka
+namespace PopugCommon.Kafka
 {
 
     public static class SerializeExtensions

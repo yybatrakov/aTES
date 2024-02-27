@@ -1,18 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using AuthorizationServer.AuthSchemes;
 using AuthorizationServer.Interfaces;
 using AuthorizationServer.Persistence;
 using AuthorizationServer.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +18,7 @@ namespace AuthorizationServer
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,40 +29,18 @@ namespace AuthorizationServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["secret_key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["secret_key"]));
 
-                services.AddAuthentication(options=> 
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options=> 
-                {
-
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        IssuerSigningKey = key,
-                        SaveSigninToken = true,
-                        ValidateIssuer = true,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ValidIssuer = "popug.auth.com",
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            if (context.Request.Query.ContainsKey("access_token"))
-                            {
-                                context.Token = context.Request.Query["access_token"];
-                            }
-
-                            return Task.CompletedTask;
-                        },
-                        
-                    };
+            services.AddLkdTokenAuthentication();
+            
+            services.AddHttpClient()
+              .AddHttpContextAccessor();
+            
+            services.AddCors(policies => {
+                policies.AddDefaultPolicy(builder => {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 });
+            });
 
             //Add Sqlite DataBase for demo purpose only.
             services.AddDbContext<DataContext>(options =>
@@ -96,6 +68,38 @@ namespace AuthorizationServer
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Popug oAuth server", Version = "v1" });
+
+                c.AddSecurityDefinition(
+                "oauth2",
+                new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        AuthorizationCode = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri("https://localhost:52999/oauth/authorize"),
+                            TokenUrl = new Uri("https://localhost:52999/oauth/token")                        }
+                    }
+                });
+
+                c.AddSecurityRequirement(
+                new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme{
+                            Reference = new OpenApiReference{
+                                Id = "oauth2", //The name of the previously defined security scheme.
+                                Type = ReferenceType.SecurityScheme
+                            },
+                            Scheme = "Bearer",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+
             });
 
 
@@ -108,7 +112,15 @@ namespace AuthorizationServer
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Popug oAuth server"));
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Popug oAuth server");
+                    c.OAuthClientId("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
+                    c.OAuthClientSecret("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
+                    c.OAuthAppName("PopugAuthorizationServer");
+                    c.OAuthScopeSeparator(",");
+                    c.OAuthUsePkce();
+                });
 
             }
             else
@@ -117,14 +129,14 @@ namespace AuthorizationServer
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseAuthentication();
+
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             
 
             app.UseRouting();
-            app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
