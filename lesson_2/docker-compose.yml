@@ -8,6 +8,13 @@ services:
       dockerfile: PopugAuthorizationServer/Dockerfile
     ports:
       - 52999:80
+  popugtasktrackerservice:
+    image: ${DOCKER_REGISTRY-}popugtasktrackerservice
+    build:
+      context: .
+      dockerfile: PopugTaskTracker/Dockerfile
+    ports:
+      - 52999:80
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:
