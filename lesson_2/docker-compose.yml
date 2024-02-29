@@ -13,8 +13,6 @@ services:
     build:
       context: .
       dockerfile: PopugTaskTracker/Dockerfile
-    ports:
-      - 52999:80
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:

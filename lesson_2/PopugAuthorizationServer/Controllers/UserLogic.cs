@@ -40,6 +40,7 @@ namespace AuthorizationServer.Controllers
             Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
             {
                 MessageId = Guid.NewGuid().ToString(),
+                UserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role,
                 Operation = CudOperation.Add,
@@ -58,6 +59,7 @@ namespace AuthorizationServer.Controllers
             Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
             {
                 MessageId = Guid.NewGuid().ToString(),
+                UserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role,
                 Operation = CudOperation.Update,
@@ -73,6 +75,7 @@ namespace AuthorizationServer.Controllers
             Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
             {
                 MessageId = Guid.NewGuid().ToString(),
+                UserId = identity.Id,
                 UserName = identity.UserName,
                 Operation = CudOperation.Delete,
                 OpertionDate = DateTime.Now

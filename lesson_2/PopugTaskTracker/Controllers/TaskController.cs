@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthorizationServer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,8 +17,9 @@ namespace PopugTaskTracker.Controllers
         public TaskController()
         {
         }
-
         [HttpGet]
+
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public IEnumerable<Task> Get()
         {
             var rng = new Random();
