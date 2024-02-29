@@ -100,10 +100,9 @@
                 {
                     IssuerSigningKey = key,
                     SaveSigninToken = true,
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidIssuer="ebrahim.auth.com",
+                    ValidateLifetime = false,
                     ClockSkew = TimeSpan.Zero
                 }, out var securityToken);
             

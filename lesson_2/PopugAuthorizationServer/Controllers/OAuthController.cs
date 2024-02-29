@@ -117,17 +117,7 @@
                     refresh_token,
                     token_type = "Bearer"
                 };
-                //var responseJson = responseObject.ToJson();
-                //var responseBytes = Encoding.UTF8.GetBytes(responseJson);
-
-                //await Response.Body.WriteAsync(responseBytes, 0, responseBytes.Length);
-
-                var handler = new JsonWebTokenHandler();
                 return Ok(responseObject);
-                //return new IActionResult( StatusCodes.Status302Found;
-                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status302Found, redirect_uri);
-                //return new RedirectResult()
-                //return Redirect(redirect_uri);
             }
             return View();
         }

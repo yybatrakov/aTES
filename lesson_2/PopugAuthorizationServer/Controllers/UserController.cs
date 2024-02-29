@@ -53,6 +53,27 @@ namespace AuthorizationServer.Controllers
             return Ok(result);
         }
 
+        [HttpPut("users/update")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
+        public async Task<IActionResult> Update(AuthUser user, string role)
+        {
+            var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();
+            var userRoles = await userManager.GetRolesAsync(identity);
+            await userManager.RemoveFromRolesAsync(identity, userRoles);
+            var result = await userManager.AddToRoleAsync(identity, role);
+
+            Kafka.Produce("Users", identity.UserName, (new UserMessage()
+            {
+                MessageId = Guid.NewGuid().ToString(),
+                UserName = identity.UserName,
+                UserRole = role,
+                Operation = CudOperation.Update,
+                OpertionDate = DateTime.Now
+            }).ToJson());
+
+            return Ok(result);
+        }
+
         [HttpDelete("users/delete")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Delete(AuthUser user)
