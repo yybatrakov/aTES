@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AuthorizationServer.Controllers;
 using AuthorizationServer.Interfaces;
 using AuthorizationServer.Persistence;
 using AuthorizationServer.Services;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace AuthorizationServer
 {
@@ -62,45 +64,11 @@ namespace AuthorizationServer
             .AddSignInManager<SignInManager<IdentityUser>>()
             .AddRoleValidator<RoleValidator<IdentityRole>>()
             .AddRoleManager<RoleManager<IdentityRole>>();
+            services.AddTransient<UserLogic>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddControllersWithViews();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Popug oAuth server", Version = "v1" });
-
-                c.AddSecurityDefinition(
-                "oauth2",
-                new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        AuthorizationCode = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl = new Uri("https://localhost:52999/oauth/authorize"),
-                            TokenUrl = new Uri("https://localhost:52999/oauth/token")                        }
-                    }
-                });
-
-                c.AddSecurityRequirement(
-                new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme{
-                            Reference = new OpenApiReference{
-                                Id = "oauth2", //The name of the previously defined security scheme.
-                                Type = ReferenceType.SecurityScheme
-                            },
-                            Scheme = "Bearer",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                    }
-                });
-
-            });
+            services.AddSwaggerGen(c => StartupHelpers.IntiSwaggerAuth(c, "Popug oAuth server"));
 
 
         }

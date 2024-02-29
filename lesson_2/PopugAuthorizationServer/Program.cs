@@ -1,3 +1,4 @@
+using AuthorizationServer.Controllers;
 using AuthorizationServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -23,10 +24,11 @@ namespace AuthorizationServer
                     var dataBase = services.GetRequiredService<DataContext>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    var usersLogic = services.GetRequiredService<UserLogic>();
                     dataBase.Database.Migrate();
-                    // this may lead to deadlock if another thread is waiting for this to complete.
-                    // It is okay in our case, no problem will occur.
-                    Seed.AddInitialUsersAsync(dataBase, userManager, roleManager).Wait();
+                    
+                    //Создаем базовых пользователей
+                    Seed.AddInitialUsersAsync(dataBase, userManager, roleManager, usersLogic).Wait();
                 }
                 catch (System.Exception ex)
                 {

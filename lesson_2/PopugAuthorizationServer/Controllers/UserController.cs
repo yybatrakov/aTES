@@ -1,14 +1,6 @@
 ﻿using AuthorizationServer.Models;
-using AuthorizationServer.Persistence;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PopugCommon.Kafka;
-using PopugCommon.KafkaMessages;
-using System;
-using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AuthorizationServer.Controllers
@@ -16,79 +8,37 @@ namespace AuthorizationServer.Controllers
 
     public class UserController : Controller
     {
-        private readonly DataContext dataContext;
-        private readonly UserManager<IdentityUser> userManager;
+        public UserLogic UserLogic { get; }
 
-        public UserController(DataContext dataContext, UserManager<IdentityUser> userManager)
+        public UserController(UserLogic userLogic)
         {
-            this.dataContext = dataContext;
-            this.userManager = userManager;
+            UserLogic = userLogic;
         }
         [HttpGet("users/get")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Get()
         {
-            return Ok(dataContext.Users.ToListAsync());
+            return Ok(await UserLogic.GetUsers());
         }
         [HttpPost("users/add")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Add(AuthUser user, string role)
         {
-            var result = await userManager.CreateAsync(new IdentityUser
-            {
-                UserName = AuthUserHelper.GetUserFromBeak(user.Beak)
-            }, user.Beak);
-            var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();
-
-            result = await userManager.AddToRoleAsync(identity, role);
-
-            Kafka.Produce("Users", identity.UserName, (new UserMessage() { 
-                MessageId = Guid.NewGuid().ToString(),
-                UserName = identity.UserName,
-                UserRole = role,
-                Operation = CudOperation.Add,
-                OpertionDate = DateTime.Now
-            }).ToJson());
-
-            return Ok(result);
+            return Ok(await UserLogic.AddUser(user.Beak, role));
         }
 
         [HttpPut("users/update")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Update(AuthUser user, string role)
         {
-            var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();
-            var userRoles = await userManager.GetRolesAsync(identity);
-            await userManager.RemoveFromRolesAsync(identity, userRoles);
-            var result = await userManager.AddToRoleAsync(identity, role);
-
-            Kafka.Produce("Users", identity.UserName, (new UserMessage()
-            {
-                MessageId = Guid.NewGuid().ToString(),
-                UserName = identity.UserName,
-                UserRole = role,
-                Operation = CudOperation.Update,
-                OpertionDate = DateTime.Now
-            }).ToJson());
-
-            return Ok(result);
+            return Ok(await UserLogic.UpdateUser(user.Beak, role));
         }
 
         [HttpDelete("users/delete")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
         public async Task<IActionResult> Delete(AuthUser user)
         {
-            var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(user.Beak)).FirstOrDefaultAsync();
-            var result = await userManager.DeleteAsync(identity);
-            Kafka.Produce("Users", identity.UserName, (new UserMessage()
-            {
-                MessageId = Guid.NewGuid().ToString(),
-                UserName = identity.UserName,
-                Operation = CudOperation.Delete,
-                OpertionDate = DateTime.Now
-            }).ToJson());
-
-            return Ok(result);
+            return Ok(await UserLogic.DeleteUser(user.Beak));
         }
     }
 }

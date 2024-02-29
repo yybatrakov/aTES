@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PopugCommon.KafkaMessages
 {
-    public class UserMessage
+    public class UserStreamMessage
     {
         public string MessageId { get; set; }
         public string UserName { get; set; }
@@ -20,5 +20,8 @@ namespace PopugCommon.KafkaMessages
         Update = 2,
         Delete = 3
     }
+
+    
+    
 
 }

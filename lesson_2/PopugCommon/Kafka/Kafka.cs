@@ -13,7 +13,7 @@ namespace PopugCommon.Kafka
                 BootstrapServers = "kafka:9092",
                 //BootstrapServers = "host.docker.internal:9092",
                 ClientId = Dns.GetHostName(),
-                Acks = Acks.Leader,
+                Acks = Acks.All,
                 MessageTimeoutMs = 30000,
                 MessageMaxBytes = 16777215
             };
@@ -39,6 +39,7 @@ namespace PopugCommon.Kafka
                                     $"{d.Error.Code}:{d.Error.Reason}");
                         }
                         );
+                    producer.Flush();
 
 
                 }

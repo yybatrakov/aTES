@@ -1,5 +1,6 @@
 ﻿namespace AuthorizationServer.Persistence
 {
+    using AuthorizationServer.Controllers;
     using AuthorizationServer.Domain;
     using AuthorizationServer.Models;
     using Microsoft.AspNetCore.Identity;
@@ -16,38 +17,16 @@
         /// <param name="userManager">UserManager that configure IdentityUser</param>
         /// <param name="roleManager">RoleManager that configre IdentityRole</param>
         /// <returns>Completed Task</returns>
-        public static async Task AddInitialUsersAsync(DataContext dataContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task AddInitialUsersAsync(DataContext dataContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, UserLogic usersLogic)
         {
             if (!await dataContext.Users.AnyAsync())
             {
-
-                // add some roles
-                var roles = new List<IdentityRole>
+                // создаем роли и юзеров
+                foreach (var role in new []{ "Admin", "Manager", "Accounter"})
                 {
-                    new IdentityRole
-                    {
-                        Name="Admin"
-                    },
-                    new IdentityRole
-                    {
-                        Name = "Manager"
-                    },
-                    new IdentityRole
-                    {
-                        Name ="Accounter"
-                    }
-                };
-                // create roles first
-                foreach (var role in roles)
-                {
-                    await roleManager.CreateAsync(role);
+                    await roleManager.CreateAsync(new IdentityRole { Name = role });
+                    await usersLogic.AddUser(AuthUserHelper.GetUserBeak(role), role);
                 }
-
-
-                //add admin user
-                var user = new IdentityUser() { UserName = "Admin" };
-                await userManager.CreateAsync(user, AuthUserHelper.GetUserBeak(user.UserName));
-                await userManager.AddToRoleAsync(user, "Admin");
             }
 
             if (!await dataContext.OAuthClients.AnyAsync())
