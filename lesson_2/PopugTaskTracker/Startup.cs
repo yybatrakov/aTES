@@ -1,7 +1,9 @@
+using AuthorizationServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,12 +28,28 @@ namespace PopugTaskTracker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddPopugTokenAuthentication();
+
+            services.AddHttpClient()
+              .AddHttpContextAccessor();
+
+            //Add Sqlite DataBase for demo purpose only.
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlite(Configuration.GetConnectionString("SqliteDb"));
+            });
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
+
+            services.AddCors(policies =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PopugTaskTracker", Version = "v1" });
+                policies.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
             });
+
+            services.AddSwaggerGen(c => StartupHelpers.IntiSwaggerAuth(c, "PopugTaskTracker"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,13 +59,20 @@ namespace PopugTaskTracker
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PopugTaskTracker v1"));
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PopugTaskTracker v1");
+                    c.OAuthClientId("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
+                    c.OAuthClientSecret("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
+                    c.OAuthAppName("PopugAuthorizationServer");
+                    c.OAuthScopeSeparator(",");
+                    c.OAuthUsePkce();
+                });
             }
-
-            app.UseHttpsRedirection();
+            app.UseAuthentication();
 
             app.UseRouting();
 
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

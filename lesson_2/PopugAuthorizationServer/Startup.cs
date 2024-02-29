@@ -33,16 +33,10 @@ namespace AuthorizationServer
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["secret_key"]));
 
-            services.AddLkdTokenAuthentication();
+            services.AddPopugTokenAuthentication();
             
             services.AddHttpClient()
               .AddHttpContextAccessor();
-            
-            services.AddCors(policies => {
-                policies.AddDefaultPolicy(builder => {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-                });
-            });
 
             //Add Sqlite DataBase for demo purpose only.
             services.AddDbContext<DataContext>(options =>
@@ -68,6 +62,15 @@ namespace AuthorizationServer
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddControllersWithViews();
             services.AddControllers();
+
+            services.AddCors(policies =>
+            {
+                policies.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
+            });
+
             services.AddSwaggerGen(c => StartupHelpers.IntiSwaggerAuth(c, "Popug oAuth server"));
 
 
@@ -105,6 +108,8 @@ namespace AuthorizationServer
             
 
             app.UseRouting();
+            app.UseCors();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
