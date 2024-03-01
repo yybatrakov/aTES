@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
+using PopugTaskTracker;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,15 +38,12 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
             {
-                MessageId = Guid.NewGuid().ToString(),
                 UserId = identity.Id,
                 UserName = identity.UserName,
-                UserRole = role,
-                Operation = CudOperation.Add,
-                OpertionDate = DateTime.Now
-            }).ToJson());
+                UserRole = role
+            }, Operation.Add).ToJson());
 
             return identity;
         }
@@ -56,15 +54,12 @@ namespace AuthorizationServer.Controllers
             await userManager.RemoveFromRolesAsync(identity, userRoles);
             var result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
             {
-                MessageId = Guid.NewGuid().ToString(),
                 UserId = identity.Id,
                 UserName = identity.UserName,
-                UserRole = role,
-                Operation = CudOperation.Update,
-                OpertionDate = DateTime.Now
-            }).ToJson());
+                UserRole = role
+            }, Operation.Update).ToJson());
 
             return identity;
         }
@@ -72,14 +67,11 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(userBeak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
-            Kafka.Produce(KafkaTopics.UserStream, identity.UserName, (new UserStreamMessage()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
             {
-                MessageId = Guid.NewGuid().ToString(),
                 UserId = identity.Id,
-                UserName = identity.UserName,
-                Operation = CudOperation.Delete,
-                OpertionDate = DateTime.Now
-            }).ToJson());
+                UserName = identity.UserName
+            }, Operation.Delete).ToJson());
 
             return identity;
         }

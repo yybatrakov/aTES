@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PopugTaskTracker.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PopugTaskTracker
@@ -16,6 +18,7 @@ namespace PopugTaskTracker
     {
         public static void Main(string[] args)
         {
+            var _cancellationTokenSource = new CancellationTokenSource();
             var host = CreateHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())

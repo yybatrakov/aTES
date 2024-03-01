@@ -22,7 +22,7 @@
             if (!await dataContext.Users.AnyAsync())
             {
                 // создаем роли и юзеров
-                foreach (var role in new []{ "Admin", "Manager", "Accounter"})
+                foreach (var role in new []{ "Admin", "Manager", "Accounter", "Developer", "Boss" })
                 {
                     await roleManager.CreateAsync(new IdentityRole { Name = role });
                     await usersLogic.AddUser(AuthUserHelper.GetUserBeak(role), role);

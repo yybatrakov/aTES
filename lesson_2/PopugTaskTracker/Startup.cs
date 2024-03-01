@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using PopugCommon.Kafka;
+using PopugTaskTracker.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,11 +35,18 @@ namespace PopugTaskTracker
             services.AddHttpClient()
               .AddHttpContextAccessor();
 
+            
             //Add Sqlite DataBase for demo purpose only.
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(Configuration.GetConnectionString("SqliteDb"));
-            });
+            }, ServiceLifetime.Singleton);
+
+            services.AddTransient<UsersLogic>();
+            services.AddTransient<TaskLogic>();
+            services.AddSingleton<KafkaConsumer, UsersConsumer>();
+            services.AddHostedService<KafkaConsumersStartupService>();
+
 
             services.AddControllers();
 

@@ -8,6 +8,9 @@ namespace PopugCommon.KafkaMessages
 {
     public static class KafkaTopics
     {
-        public static string UserStream = "users-stream";   
+        public static string UsersStream = "users-stream";
+        public static string TasksStream = "tasks-stream";
+        public static string TasksEvents = "tasks-events";
+
     }
 }

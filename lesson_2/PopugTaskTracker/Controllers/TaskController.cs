@@ -1,11 +1,8 @@
 ﻿using AuthorizationServer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+using PopugTaskTracker.Logic;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PopugTaskTracker.Controllers
@@ -14,20 +11,26 @@ namespace PopugTaskTracker.Controllers
     [Route("[controller]")]
     public class TaskController : ControllerBase
     {
-        public TaskController()
-        {
-        }
-        [HttpGet]
+        private readonly TaskLogic taskLogic;
 
-        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
-        public IEnumerable<Task> Get()
+        public TaskController(TaskLogic taskLogic)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new Task
-            {
-                TaskId = rng.Next(-20, 55),
-                Description = $"Do this: {rng.Next(-20, 55)}"
-            });
+            this.taskLogic = taskLogic;
         }
+        
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
+        public async Task<List<PopugTask>> Get() => await taskLogic.Get();
+
+        [HttpPost("Create")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
+        public async Task<PopugTask> Create(string description) => await taskLogic.CreateTask(new PopugTask() { Description = description });
+
+        [HttpPost("Reassign")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin,Manager")]
+        public async Task<List<PopugTask>> Reassign(string description) => await taskLogic.ReassignTasks();
+        [HttpPost("Complete")]
+        [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
+        public async Task<PopugTask> Complete(int taskId) => await taskLogic.CompleteTask(taskId);//TODO, проверить пользователя
     }
 }
