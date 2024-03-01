@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Confluent.Kafka;
-using Microsoft.Extensions.Hosting;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace PopugCommon.Kafka
 {
@@ -22,7 +19,7 @@ namespace PopugCommon.Kafka
         private ConsumerConfig config = new ConsumerConfig
         {
             BootstrapServers = "kafka:9092",
-            GroupId = "foo",
+            GroupId = "Popug",
             AutoOffsetReset = AutoOffsetReset.Earliest,
             AllowAutoCreateTopics = true
         };
@@ -52,15 +49,5 @@ namespace PopugCommon.Kafka
             }
 
         }
-        //public async Task StartAsync(CancellationToken cancellationToken)
-        //{
-        //    await Task.Run(() => Consume(cancellationToken), cancellationToken);
-        //    await Task.CompletedTask;
-        //}
-
-        //public async Task StopAsync(CancellationToken cancellationToken)
-        //{
-        //    await Task.CompletedTask;
-        //}
     }
 }

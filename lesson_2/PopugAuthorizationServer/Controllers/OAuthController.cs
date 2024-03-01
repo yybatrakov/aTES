@@ -1,17 +1,16 @@
-﻿namespace AuthorizationServer.Controllers
-{
-    using AuthorizationServer.Interfaces;
-    using AuthorizationServer.Models;
-    using AuthorizationServer.Persistence;
-    using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.IdentityModel.JsonWebTokens;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using AuthorizationServer.Interfaces;
+using AuthorizationServer.Models;
+using AuthorizationServer.Persistence;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace AuthorizationServer.Controllers
+{
     public class OAuthController : Controller
     {
         private readonly SignInManager<IdentityUser> signInManager;
@@ -27,7 +26,6 @@
             this.signInManager = signInManager;
         }
 
-        //https://localhost:44370/oauth/authorize?client_id=BF2C6EC3-338A-4EE3-9D97-F98A2A559186&scope=user%20phone&response_type=code&redirect_uri=https%3A%2F%2Flocalhost%3A44336%2Foauth%2Fcallback&code_challenge=Pz1aQzMaQj4KEbMTKVZZEpv3j6YJ5cL92nqE2RddU-0&code_challenge_method=S256&state=CfDJ8JM3PxjMXlxBkQqvAKdxJ3h_PxrV1ozJEMJjXg9XQx6x31RQE3qn-GFcemmVlfTVmR7NT7nMcTWjpbZZx-yObKMyQ0xF2gsVgl0Vn0AIO043aLJnwnQLCkdygiEH1wsVYb3ukRypGdW1dJPK_G0LeqGu1S9SvPwT9R6yfWKskF9n_1tnTwkoAZdQyeSnYqeZwVpGe6xa1Gyhrr9xLnXWl68KV4UDB-hBsHBJPtJCBuKiFNNGNoEcJaLzLronaTV6U1Zf6Mo71Y29A5faH6o7wTHFawqhFbrF-7GiEI-s_ICE
         [HttpGet]
         public async Task<IActionResult> AuthorizeAsync(
             string client_id,

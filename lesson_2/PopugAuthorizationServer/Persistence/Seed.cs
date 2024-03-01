@@ -17,7 +17,7 @@
         /// <param name="userManager">UserManager that configure IdentityUser</param>
         /// <param name="roleManager">RoleManager that configre IdentityRole</param>
         /// <returns>Completed Task</returns>
-        public static async Task AddInitialUsersAsync(DataContext dataContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, UserLogic usersLogic)
+        public static async Task AddInitialUsersAsync(DataContext dataContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, UsersLogic usersLogic)
         {
             if (!await dataContext.Users.AnyAsync())
             {

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 namespace AuthorizationServer.Controllers
 {
 
-    public class UserController : Controller
+    public class UsersController : Controller
     {
-        public UserLogic UserLogic { get; }
+        public UsersLogic UserLogic { get; }
 
-        public UserController(UserLogic userLogic)
+        public UsersController(UsersLogic userLogic)
         {
             UserLogic = userLogic;
         }

@@ -24,7 +24,7 @@ namespace AuthorizationServer
                     var dataBase = services.GetRequiredService<DataContext>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    var usersLogic = services.GetRequiredService<UserLogic>();
+                    var usersLogic = services.GetRequiredService<UsersLogic>();
                     dataBase.Database.Migrate();
                     
                     //Создаем базовых пользователей

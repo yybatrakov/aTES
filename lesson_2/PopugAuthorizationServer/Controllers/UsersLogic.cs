@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
-using PopugTaskTracker;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -13,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace AuthorizationServer.Controllers
 {
-    public class UserLogic
+    public class UsersLogic
     {
         private readonly DataContext dataContext;
         private readonly UserManager<IdentityUser> userManager;
 
-        public UserLogic(DataContext dataContext, UserManager<IdentityUser> userManager)
+        public UsersLogic(DataContext dataContext, UserManager<IdentityUser> userManager)
         {
             this.dataContext = dataContext;
             this.userManager = userManager;

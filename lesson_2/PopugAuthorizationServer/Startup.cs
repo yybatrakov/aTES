@@ -58,7 +58,7 @@ namespace AuthorizationServer
             .AddSignInManager<SignInManager<IdentityUser>>()
             .AddRoleValidator<RoleValidator<IdentityRole>>()
             .AddRoleManager<RoleManager<IdentityRole>>();
-            services.AddTransient<UserLogic>();
+            services.AddTransient<UsersLogic>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddControllersWithViews();
             services.AddControllers();
