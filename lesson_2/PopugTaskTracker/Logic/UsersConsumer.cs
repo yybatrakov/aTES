@@ -2,7 +2,6 @@
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System.Threading.Tasks;
-using static PopugTaskTracker.DataContext;
 
 namespace PopugTaskTracker.Logic
 {

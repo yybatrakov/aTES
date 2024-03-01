@@ -28,7 +28,7 @@ namespace PopugTaskTracker.Controllers
 
         [HttpPost("Reassign")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin,Manager")]
-        public async Task<List<PopugTask>> Reassign(string description) => await taskLogic.ReassignTasks();
+        public async Task<List<PopugTask>> Reassign() => await taskLogic.ReassignTasks();
 
         [HttpPost("Complete")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
