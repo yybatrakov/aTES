@@ -3,7 +3,7 @@ using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System.Threading.Tasks;
 
-namespace PopugAccounting.Logic
+namespace PopugAnalitics.Logic
 {
     public class TasksEventsConsumer : KafkaConsumer
     {

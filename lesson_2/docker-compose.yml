@@ -18,6 +18,11 @@ services:
     build:
       context: .
       dockerfile: PopugAccounting/Dockerfile
+  popuganaliticservice:
+    image: ${DOCKER_REGISTRY-}popuganaliticservice
+    build:
+      context: .
+      dockerfile: PopugAnalitics/Dockerfile
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:
