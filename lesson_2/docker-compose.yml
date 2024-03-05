@@ -13,6 +13,11 @@ services:
     build:
       context: .
       dockerfile: PopugTaskTracker/Dockerfile
+  popugaccountingservice:
+    image: ${DOCKER_REGISTRY-}popugaccountingrservice
+    build:
+      context: .
+      dockerfile: PopugAccounting/Dockerfile
   zookeeper:
     image: wurstmeister/zookeeper:latest
     environment:
