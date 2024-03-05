@@ -1,0 +1,23 @@
+﻿@model AuthUser
+<link href="~/css/login.css" rel="stylesheet" />
+@{ 
+    var routeData = $"oauth/authorize/{TempData["query"]}";
+}
+<div class="container">
+    <div class="col-lg-12">
+        <h1 class="text-center">Popug Authorization Server</h1>
+        <br/>
+        <br/>
+        <section class="row d-flex justify-content-center">
+            <form url="@routeData" method="post" class="login-form">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Enter yours beak signature:</label>
+                        <input asp-for="Beak" type="text" class="form-control" id="exampleBeak" placeholder="Enter beak">
+                    </div>
+                    <div class="flex-column d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success">Accept and Login</button>
+                    </div>
+            </form>
+        </section>
+    </div>
+</div>

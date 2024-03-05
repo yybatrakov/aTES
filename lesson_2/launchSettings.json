@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "popugauthorizationserver",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
+      "serviceActions": {
+        "kafka": "StartWithoutDebugging",
+        "kafka-ui": "StartWithoutDebugging",
+        "popugauthorizationserver": "StartDebugging",
+        "zookeeper": "StartWithoutDebugging"
+      }
+    }
+  }
+}
