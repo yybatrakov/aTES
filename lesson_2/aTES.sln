@@ -9,7 +9,11 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopugCommon", "PopugCommon\PopugCommon.csproj", "{8FDE8D3C-1812-48E5-AD00-A231FC7F6A98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopugTaskTracker", "PopugTaskTracker\PopugTaskTracker.csproj", "{526B6428-F344-4E7B-AF1C-9D1E01F16C23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PopugTaskTracker", "PopugTaskTracker\PopugTaskTracker.csproj", "{526B6428-F344-4E7B-AF1C-9D1E01F16C23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopugAccounting", "PopugAccounting\PopugAccounting.csproj", "{4FFCFBE6-D548-4291-937F-8F9133696888}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopugAnalitics", "PopugAnalitics\PopugAnalitics.csproj", "{D20EADDB-5C20-4881-94F4-DECD7C39FF3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{526B6428-F344-4E7B-AF1C-9D1E01F16C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{526B6428-F344-4E7B-AF1C-9D1E01F16C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{526B6428-F344-4E7B-AF1C-9D1E01F16C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FFCFBE6-D548-4291-937F-8F9133696888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FFCFBE6-D548-4291-937F-8F9133696888}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FFCFBE6-D548-4291-937F-8F9133696888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FFCFBE6-D548-4291-937F-8F9133696888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D20EADDB-5C20-4881-94F4-DECD7C39FF3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D20EADDB-5C20-4881-94F4-DECD7C39FF3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D20EADDB-5C20-4881-94F4-DECD7C39FF3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D20EADDB-5C20-4881-94F4-DECD7C39FF3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

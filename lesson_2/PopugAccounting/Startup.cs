@@ -1,14 +1,22 @@
 using AuthorizationServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using PopugAccounting.Logic;
 using PopugCommon.Kafka;
-using PopugTaskTracker.Logic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace PopugTaskTracker
+namespace PopugAccounting
 {
     public class Startup
     {
@@ -27,21 +35,17 @@ namespace PopugTaskTracker
             services.AddHttpClient()
               .AddHttpContextAccessor();
 
-            
             //Add Sqlite DataBase for demo purpose only.
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(Configuration.GetConnectionString("SqliteDb"));
             }, ServiceLifetime.Singleton);
 
-            services.AddTransient<UsersLogic>();
-            services.AddTransient<TaskLogic>();
-            services.AddSingleton<KafkaConsumer, UsersConsumer>();
+            services.AddSingleton<KafkaConsumer, TasksEventsConsumer>();
+
             services.AddHostedService<KafkaConsumersStartupService>();
 
-
             services.AddControllers();
-
             services.AddCors(policies =>
             {
                 policies.AddDefaultPolicy(builder =>
@@ -50,7 +54,7 @@ namespace PopugTaskTracker
                 });
             });
 
-            services.AddSwaggerGen(c => StartupHelpers.IntiSwaggerAuth(c, "PopugTaskTracker"));
+            services.AddSwaggerGen(c => StartupHelpers.IntiSwaggerAuth(c, "PopugAccounting"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +65,7 @@ namespace PopugTaskTracker
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PopugTaskTracker v1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PopugAccounting v1");
                     c.OAuthClientId("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
                     c.OAuthClientSecret("BF2C6EC3-338A-4EE3-9D97-F98A2A559186");
                     c.OAuthAppName("PopugAuthorizationServer");
