@@ -1,6 +1,7 @@
 ﻿using AuthorizationServer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PopugAccounting.Logic;
 using PopugTaskTracker;
 using System.Collections.Generic;
 using System.Data;
@@ -12,15 +13,18 @@ namespace PopugAccounting.Controllers
     [Route("[controller]")]
     public class AccountingController : ControllerBase
     {
-        public AccountingController()
+        public AccountingLogic AccountingLogic { get; }
+
+        public AccountingController(AccountingLogic accountingLogic)
         {
+            AccountingLogic = accountingLogic;
         }
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
-        public async Task<List<PopugTask>> Get()
+        public async Task ProcessPayment()
         {
-            return new List<PopugTask> { };
+            await AccountingLogic.ProcessPayment();
         }
     }
 }

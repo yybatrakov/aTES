@@ -52,8 +52,8 @@ namespace PopugTaskTracker.Logic
             var task = await Get(taskId);
             task.IsCompleted= true;
             await Update(task);
-            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Update).ToJson());
-            Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskCompleted).ToJson());
+            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamEvent<PopugTask>(task, Operation.Update).ToJson());
+            Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new BussinessEvent<PopugTask>(task, Events.TaskCompleted).ToJson());
             return task;
         }
 
@@ -61,8 +61,8 @@ namespace PopugTaskTracker.Logic
         {
             task = (await AssignTasks(new List<PopugTask> { task })).Single();
             await Update(task);
-            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Add).ToJson());
-            Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskAssigned).ToJson());
+            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamEvent<PopugTask>(task, Operation.Create).ToJson());
+            Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new BussinessEvent<PopugTask>(task, Events.TaskAssigned).ToJson());
             return task;
         }
 
@@ -72,8 +72,8 @@ namespace PopugTaskTracker.Logic
             foreach (var task in tasks)
             {
                 await Update(task);
-                Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Update).ToJson());
-                Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskAssigned).ToJson());
+                Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamEvent<PopugTask>(task, Operation.Update).ToJson());
+                Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new BussinessEvent<PopugTask>(task, Events.TaskAssigned).ToJson());
             }
             return tasks;
         }

@@ -11,11 +11,11 @@ namespace PopugAnalitics.Logic
         public TasksEventsConsumer()
         {
         }
-        public override string MessageType => KafkaTopics.TasksEvents;
+        public override string MessageType => KafkaTopics.TasksLifecycle;
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var user = message.Value.FromJson<EventMessage<Task>>();
+            var user = message.Value.FromJson<BussinessEvent<Task>>();
         }
     }
 }

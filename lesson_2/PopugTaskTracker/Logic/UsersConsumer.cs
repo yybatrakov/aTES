@@ -17,10 +17,10 @@ namespace PopugTaskTracker.Logic
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var user = SerializeExtensions.FromJson<StreamMessage<User>>(message.Value);
+            var user = SerializeExtensions.FromJson<StreamEvent<User>>(message.Value);
             switch (user.Operation)
             {
-                case Operation.Add:
+                case Operation.Create:
                 case Operation.Update:
                     await usersLogic.AddOrUpdate(user.Value);
                     break;

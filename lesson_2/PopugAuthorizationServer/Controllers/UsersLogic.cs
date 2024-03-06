@@ -36,12 +36,13 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
             {
                 UserId = identity.Id,
+                PublicUserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Operation.Add).ToJson());
+            }, Operation.Create).ToJson());
 
             return identity;
         }
@@ -52,9 +53,10 @@ namespace AuthorizationServer.Controllers
             await userManager.RemoveFromRolesAsync(identity, userRoles);
             var result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
             {
                 UserId = identity.Id,
+                PublicUserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
             }, Operation.Update).ToJson());
@@ -65,9 +67,10 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(userBeak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
             {
                 UserId = identity.Id,
+                PublicUserId = identity.Id,
                 UserName = identity.UserName
             }, Operation.Delete).ToJson());
 
