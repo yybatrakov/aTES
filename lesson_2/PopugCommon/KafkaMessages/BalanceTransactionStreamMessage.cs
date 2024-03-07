@@ -1,8 +1,10 @@
-﻿namespace PopugAccounting
-{
-    using System;
+﻿using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
 
-    public class BalanceTransaction
+namespace PopugCommon.KafkaMessages
+{
+    public class BalanceTransactionStreamEvent
     {
         public int id { get; set; }
         public string UserId { get; set; }

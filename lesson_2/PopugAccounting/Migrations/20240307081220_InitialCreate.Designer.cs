@@ -9,7 +9,7 @@ using PopugAccounting;
 namespace PopugAccounting.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307044258_InitialCreate")]
+    [Migration("20240307081220_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,7 +18,7 @@ namespace PopugAccounting.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.3");
 
-            modelBuilder.Entity("PopugAccounting.Balance", b =>
+            modelBuilder.Entity("PopugAccounting.BalanceDb", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,7 +35,7 @@ namespace PopugAccounting.Migrations
                     b.ToTable("Balances");
                 });
 
-            modelBuilder.Entity("PopugAccounting.BalanceTransaction", b =>
+            modelBuilder.Entity("PopugAccounting.BalanceTransactionDb", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using static PopugCommon.KafkaMessages.Messages;
 
 namespace PopugAccounting.Logic
 {
@@ -22,7 +23,7 @@ namespace PopugAccounting.Logic
         {
             return await dataContext.PopugTasks.Where(t => t.PublicId == t.PublicId).FirstOrDefaultAsync();
         }
-        public async Task<TaskDb> AddOrUpdateTask(PopugTaskStreamEvent task)
+        public async Task<TaskDb> AddOrUpdateTask(TaskStreamEvent task)
         {
             var taskDb = await GetTask(task.PublicId);
             if (taskDb != null)
@@ -51,16 +52,14 @@ namespace PopugAccounting.Logic
         public async Task ProcessPayment()
         {
             var balances = await dataContext.Balances.Where(b => b.Money > 0).ToListAsync();
-            foreach (var balance in balances)
+            var transactions =  balances.Select(b => new BalanceTransactionDb()
             {
-                await UpdateBalance(new BalanceTransaction()
-                {
-                    UserId = balance.UserId,
-                    Type = TransactionType.Payment,
-                    Date = DateTime.Now,
-                    Money = balance.Money
-                });
-            }
+                UserId = b.UserId,
+                Type = TransactionType.Payment,
+                Date = DateTime.Now,
+                Money = b.Money
+            }).ToList();
+            transactions.ForEach(async t => await UpdateBalance(t));
         }
         public async Task CreateBalance(string userId)
         {
@@ -68,21 +67,36 @@ namespace PopugAccounting.Logic
             if (balance != null)
                 return;
 
-            balance = new Balance() { UserId = userId, Money = 0 };
+            balance = new BalanceDb() { UserId = userId, Money = 0 };
             await dataContext.Balances.AddAsync(balance);
             dataContext.SaveChanges();
-            await Kafka.Produce(KafkaTopics.BalanceStream, balance.Id.ToString(), new PopugMessage(balance, Messages.Balances.Stream.Created, "v1"));
+            
         }
-        public async Task UpdateBalance(BalanceTransaction transaction)
+        public async Task UpdateBalance(BalanceTransactionDb transaction)
         {
             var balance = await dataContext.Balances.Where(b => b.UserId == transaction.UserId).SingleAsync();
             balance.Money = balance.Money + transaction.Money;
             dataContext.BalanceTransactions.Add(transaction);
             dataContext.Balances.Update(balance);
             await dataContext.SaveChangesAsync();
-            
-            await Kafka.Produce(KafkaTopics.BalanceStream, balance.Id.ToString(), new PopugMessage(balance, Messages.Balances.Stream.Updated, "v1"));
-            await Kafka.Produce(KafkaTopics.BalanceStream, balance.Id.ToString(), new PopugMessage(transaction, Messages.BalanceTransaction.Stream.Created, "v1"));
+
+            var transactionEvent = new BalanceTransactionStreamEvent()
+            {
+                id = transaction.id,
+                UserId = transaction.UserId,
+                Money = balance.Money,
+                Date = transaction.Date,
+                Type = transaction.Type
+            };
+
+            await Kafka.Produce(KafkaTopics.BalanceTransactionStream, balance.Id.ToString(), new PopugMessage(transactionEvent, Messages.BalanceTransaction.Stream.Created, "v1"));
+        }
+        public Task SendPaymentNotification(BalancePaymentProcessedEvent balancePaymentProcessedEvent)
+        {
+            balancePaymentProcessedEvent.Transactions.ForEach(t => {
+                //Из требований не понял кому нужно письмо. Оно тут отсылается
+            } );
+            return Task.CompletedTask;
         }
     }
 }

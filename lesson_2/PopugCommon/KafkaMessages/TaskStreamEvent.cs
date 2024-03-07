@@ -1,6 +1,6 @@
 ﻿namespace PopugTaskTracker
 {
-    public class PopugTaskStreamEvent
+    public class TaskStreamEvent
     {
         public int Id { get; set; }
         public string PublicId { get; set; }

@@ -23,6 +23,7 @@ namespace PopugCommon.KafkaMessages
                 public const string Updated = "balance.stream.updated";
                 public const string Created = "balance.stream.created";
             }
+            public const string PaymentProcessd = "task.payment.processed";
         }
         public static class BalanceTransaction
         {

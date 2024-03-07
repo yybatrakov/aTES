@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PopugAccounting.Logic
 {
-    public class TasksTasksLifecycleConsumer : KafkaConsumer
+    public class TasksLifecycleConsumer : KafkaConsumer
     {
         public override string MessageType => KafkaTopics.TasksLifecycle;
 
         public AccountingLogic AccountingLogic { get; }
 
-        public TasksTasksLifecycleConsumer(AccountingLogic accountingLogic)
+        public TasksLifecycleConsumer(AccountingLogic accountingLogic)
         {
             AccountingLogic = accountingLogic;
         }
@@ -32,21 +32,21 @@ namespace PopugAccounting.Logic
                         throw new NotImplementedException("еще не назначили деньги");
                     }
                     //TODO, если еще не назначили деньги
-                    await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
+                    await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
                     break;
                 case Messages.Tasks.ReAssigned + "_v1":
                     var tasksReassigned = SerializeExtensions.FromJson<TasksReassignedEvent>(popug.Data.ToString());
                     foreach (var t in tasksReassigned.Tasks)
                     {
                         task = await AccountingLogic.GetTask(t.PublicId);
-                        await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = t.AssignedUserId });
+                        await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = t.AssignedUserId });
                     }
                     break;
                 case Messages.Tasks.Completed + "_v1":
                     var taskCompleted = SerializeExtensions.FromJson<TaskCompletedEvent>(popug.Data.ToString());
                     task = await AccountingLogic.GetTask(taskCompleted.PublicId);
                     //TODO, если еще не назначили деньги
-                    await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Complete, Date = popug.EventDate, Money = task.Amount, UserId = task.AssignedUserId });
+                    await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Complete, Date = popug.EventDate, Money = task.Amount, UserId = task.AssignedUserId });
                     break;
             }
         }

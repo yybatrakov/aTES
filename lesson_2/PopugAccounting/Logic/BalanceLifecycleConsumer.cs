@@ -7,29 +7,28 @@ using System.Threading.Tasks;
 
 namespace PopugAccounting.Logic
 {
-    public class TasksStreamConsumer : KafkaConsumer
+    public class BalanceLifecycleConsumer : KafkaConsumer
     {
-        public override string MessageType => KafkaTopics.TasksStream;
+        public override string MessageType => KafkaTopics.TasksLifecycle;
 
         public AccountingLogic AccountingLogic { get; }
 
-        public TasksStreamConsumer(AccountingLogic accountingLogic)
+        public BalanceLifecycleConsumer(AccountingLogic accountingLogic)
         {
             AccountingLogic = accountingLogic;
         }
-        
+
         public async override Task OnMessage(Message<Ignore, string> message)
         {
             var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
 
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Tasks.Stream.Created + "_v1":
-                    var task = SerializeExtensions.FromJson<TaskStreamEvent>(popug.Data.ToString());
-                    await AccountingLogic.AddOrUpdateTask(SerializeExtensions.FromJson<TaskStreamEvent>(popug.Data.ToString()));
+                case Messages.Balances.PaymentProcessd + "_v1":
+                    var paymentEvent = SerializeExtensions.FromJson<BalancePaymentProcessedEvent>(popug.Data.ToString());
+                    await AccountingLogic.SendPaymentNotification(paymentEvent);
                     break;
             }
-
         }
     }
 }

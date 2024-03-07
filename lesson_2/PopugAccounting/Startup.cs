@@ -43,7 +43,7 @@ namespace PopugAccounting
 
             services.AddTransient<AccountingLogic>();
             services.AddSingleton<KafkaConsumer, UsersConsumer>();
-            services.AddSingleton<KafkaConsumer, TasksTasksLifecycleConsumer>();
+            services.AddSingleton<KafkaConsumer, TasksLifecycleConsumer>();
             services.AddSingleton<KafkaConsumer, TasksStreamConsumer>();
 
             services.AddHostedService<KafkaConsumersStartupService>();

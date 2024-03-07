@@ -8,7 +8,7 @@ using PopugTaskTracker;
 namespace PopugTaskTracker.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307044630_InitialCreate")]
+    [Migration("20240307081231_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
