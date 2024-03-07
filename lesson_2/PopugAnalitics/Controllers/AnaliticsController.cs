@@ -21,9 +21,9 @@ namespace PopugAnalitics.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
-        public async Task<List<PopugTask>> Get()
+        public async Task<List<PopugTaskStreamEvent>> Get()
         {
-            return new List<PopugTask> { };
+            return new List<PopugTaskStreamEvent> { };
         }
     }
 }

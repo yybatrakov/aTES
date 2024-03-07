@@ -18,50 +18,30 @@ namespace PopugAccounting.Logic
         {
             this.dataContext = dataContext;
         }
-        public async Task<User> GetUser(string userId)
-        {
-            return await dataContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
-        }
-        public async Task<User> AddOrUpdateUser(User user)
-        {
-            var userDb = await GetUser(user.UserId);
-            if (userDb != null)
-            {
-                dataContext.Users.Update(user);
-                await dataContext.SaveChangesAsync();
-            }
-            else
-            {
-                await dataContext.Users.AddAsync(user);
-                await dataContext.SaveChangesAsync();
-            }
-
-            return await GetUser(user.UserId);
-        }
-        public async Task<User> DeleteUser(User user)
-        {
-            dataContext.Users.Remove(user);
-            return await GetUser(user.UserId);
-        }
-        public async Task<PopugTask> GetTask(string public_id)
+        public async Task<TaskDb> GetTask(string public_id)
         {
             return await dataContext.PopugTasks.Where(t => t.PublicId == t.PublicId).FirstOrDefaultAsync();
         }
-        public async Task<PopugTask> AddOrUpdateTask(PopugTask task)
+        public async Task<TaskDb> AddOrUpdateTask(PopugTaskStreamEvent task)
         {
             var taskDb = await GetTask(task.PublicId);
             if (taskDb != null)
             {
-                task.Id = taskDb.Id;
-                dataContext.PopugTasks.Update(task);
+                taskDb.AssignedUserId = task.AssignedUserId;
+                taskDb.Description = task.Description;
+                dataContext.PopugTasks.Update(taskDb);
                 await dataContext.SaveChangesAsync();
             }
             else
             {
                 var rnd = new Random();
-                task.Fee = rnd.Next(10, 20);
-                task.Amount = rnd.Next(20, 40);
-                await dataContext.PopugTasks.AddAsync(task);
+                taskDb = new TaskDb();
+                taskDb.Fee = rnd.Next(10, 20);
+                taskDb.Amount = rnd.Next(20, 40);
+                taskDb.Description = task.Description;
+                taskDb.AssignedUserId = task.AssignedUserId;
+
+                await dataContext.PopugTasks.AddAsync(taskDb);
                 await dataContext.SaveChangesAsync();
                 await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, Messages.Tasks.Stream.Updated, "v1"));
             }
@@ -90,10 +70,9 @@ namespace PopugAccounting.Logic
 
             balance = new Balance() { UserId = userId, Money = 0 };
             await dataContext.Balances.AddAsync(balance);
+            dataContext.SaveChanges();
             await Kafka.Produce(KafkaTopics.BalanceStream, balance.Id.ToString(), new PopugMessage(balance, Messages.Balances.Stream.Created, "v1"));
         }
-
-
         public async Task UpdateBalance(BalanceTransaction transaction)
         {
             var balance = await dataContext.Balances.Where(b => b.UserId == transaction.UserId).SingleAsync();

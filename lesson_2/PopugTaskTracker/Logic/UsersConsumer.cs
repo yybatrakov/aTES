@@ -24,10 +24,10 @@ namespace PopugTaskTracker.Logic
             {
                 case Messages.Users.Stream.Created + "_v1":
                 case Messages.Users.Stream.Updated + "_v1":
-                    await usersLogic.AddOrUpdate(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
+                    await usersLogic.AddOrUpdate(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
                     break;
                 case Messages.Users.Stream.Deleted + "_v1":
-                    await usersLogic.Delete(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
+                    await usersLogic.Delete(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
                     break;
                 default: throw new NotImplementedException();
             }

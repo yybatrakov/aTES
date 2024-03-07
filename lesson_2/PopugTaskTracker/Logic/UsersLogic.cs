@@ -6,7 +6,6 @@ using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System.Linq;
 using System.Threading.Tasks;
-using static PopugTaskTracker.DataContext;
 
 namespace PopugTaskTracker.Logic
 {
@@ -18,30 +17,36 @@ namespace PopugTaskTracker.Logic
         {
             this.dataContext = dataContext;
         }
-        public async Task<User> Get(string userId)
+        public async Task<UserDb> Get(string publicUserId)
         {
-            return await dataContext.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
+            return await dataContext.Users.Where(u => u.PublicId == publicUserId).FirstOrDefaultAsync();
         }
-        public async Task<User> AddOrUpdate(User user)
+        public async Task<UserDb> AddOrUpdate(UserStreamEvent user)
         {
             var userDb = await Get(user.UserId);
             if (userDb != null)
             {
-                dataContext.Users.Update(user);
+                userDb.UserName = user.UserName;
+                userDb.UserRole = user.UserRole;
+                dataContext.Users.Update(userDb);
                 await dataContext.SaveChangesAsync();
             }
             else
             {
-                await dataContext.Users.AddAsync(user);
+                userDb = new UserDb() { PublicId = user.PublicId, UserName = user.UserName, UserRole = user.UserName };
+                await dataContext.Users.AddAsync(userDb);
                 await dataContext.SaveChangesAsync();
             }
             
-            return await Get(user.UserId);
+            return await Get(userDb.PublicId);
         }
-        public async Task<User> Delete(User user)
+        public async Task Delete(UserStreamEvent user)
         {
-            dataContext.Users.Remove(user);
-            return await Get(user.UserId);
+            var userDb = await Get(user.UserId);
+            if (userDb != null) {
+                dataContext.Users.Remove(userDb);
+                dataContext.SaveChanges();
+            }
         }
 
     }

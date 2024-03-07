@@ -8,7 +8,7 @@ using PopugTaskTracker;
 namespace PopugTaskTracker.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307022013_InitialCreate")]
+    [Migration("20240307044630_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,26 +17,7 @@ namespace PopugTaskTracker.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.3");
 
-            modelBuilder.Entity("PopugCommon.KafkaMessages.User", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PublicUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserRole")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("PopugTaskTracker.PopugTask", b =>
+            modelBuilder.Entity("PopugTaskTracker.TaskDb", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,6 +44,26 @@ namespace PopugTaskTracker.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PopugTasks");
+                });
+
+            modelBuilder.Entity("PopugTaskTracker.UserDb", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserRole")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

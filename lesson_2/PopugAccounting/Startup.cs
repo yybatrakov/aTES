@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PopugAccounting.Logic;
 using PopugCommon.Kafka;
-using PopugTaskTracker.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;

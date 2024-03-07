@@ -36,10 +36,10 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
-            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
-                PublicUserId = identity.Id,
+                PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
             }, Messages.Users.Stream.Created, "v1"));
@@ -53,10 +53,10 @@ namespace AuthorizationServer.Controllers
             await userManager.RemoveFromRolesAsync(identity, userRoles);
             var result = await userManager.AddToRoleAsync(identity, role);
 
-            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
-                PublicUserId = identity.Id,
+                PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
             }, Messages.Users.Stream.Updated, "v1"));
@@ -67,10 +67,10 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(userBeak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
-            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
-                PublicUserId = identity.Id,
+                PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = string.Empty
             }, Messages.Users.Stream.Deleted, "v1"));

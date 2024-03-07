@@ -21,18 +21,18 @@ namespace PopugTaskTracker.Controllers
         
         [HttpGet]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin")]
-        public async Task<List<PopugTask>> Get() => await taskLogic.Get();
+        public async Task<List<TaskDb>> Get() => await taskLogic.Get();
 
         [HttpPost("Create")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
-        public async Task<PopugTask> Create(string description) => await taskLogic.CreateTask(new PopugTask() { Description = description, PublicId = Guid.NewGuid().ToString() });
+        public async Task<TaskDb> Create(string description) => await taskLogic.CreateTask(new TaskDb() { Description = description, PublicId = Guid.NewGuid().ToString() });
 
         [HttpPost("Reassign")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin,Manager")]
-        public async Task<List<PopugTask>> Reassign() => await taskLogic.ReassignTasks();
+        public async Task<List<TaskDb>> Reassign() => await taskLogic.ReassignTasks();
 
         [HttpPost("Complete")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
-        public async Task<PopugTask> Complete(int taskId) => await taskLogic.CompleteTask(taskId);//TODO, проверить пользователя
+        public async Task<TaskDb> Complete(int taskId) => await taskLogic.CompleteTask(taskId);
     }
 }

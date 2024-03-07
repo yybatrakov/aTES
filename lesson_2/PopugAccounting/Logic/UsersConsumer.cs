@@ -1,17 +1,17 @@
 ﻿using Confluent.Kafka;
-using PopugAccounting.Logic;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System;
 using System.Threading.Tasks;
 
-namespace PopugTaskTracker.Logic
+namespace PopugAccounting.Logic
 {
     //Вынести в Common
     public class UsersConsumer : KafkaConsumer
     {
-        
-        public UsersConsumer(AccountingLogic accountingLogic) {
+
+        public UsersConsumer(AccountingLogic accountingLogic)
+        {
             AccountingLogic = accountingLogic;
         }
         public override string MessageType => KafkaTopics.UsersStream;
@@ -20,20 +20,15 @@ namespace PopugTaskTracker.Logic
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
-            
+            var popug = message.Value.FromJson<PopugMessage>();
+
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.Users.Stream.Created + "_v1":
                 case Messages.Users.Stream.Updated + "_v1":
-                    var user = SerializeExtensions.FromJson<User>(popug.Data.ToString());
-                    await AccountingLogic.AddOrUpdateUser(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
+                    var user = popug.Data.ToString().FromJson<UserStreamEvent>();
                     await AccountingLogic.CreateBalance(user.UserId);
                     break;
-                case Messages.Users.Stream.Deleted + "_v1":
-                    await AccountingLogic.DeleteUser(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
-                    break;
-                default: throw new NotImplementedException();
             }
         }
     }

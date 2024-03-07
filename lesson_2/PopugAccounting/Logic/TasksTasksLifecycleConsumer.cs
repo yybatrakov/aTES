@@ -27,6 +27,10 @@ namespace PopugAccounting.Logic
                 case Messages.Tasks.Assigned + "_v1":
                     var taskAssigned = SerializeExtensions.FromJson<TaskAssignedEvent>(popug.Data.ToString());
                     var task = await AccountingLogic.GetTask(taskAssigned.PublicId);
+                    if (task == null)
+                    {
+                        throw new NotImplementedException("еще не назначили деньги");
+                    }
                     //TODO, если еще не назначили деньги
                     await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
                     break;
@@ -35,7 +39,6 @@ namespace PopugAccounting.Logic
                     foreach (var t in tasksReassigned.Tasks)
                     {
                         task = await AccountingLogic.GetTask(t.PublicId);
-                        //TODO, если еще не назначили деньги
                         await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = t.AssignedUserId });
                     }
                     break;
@@ -45,8 +48,6 @@ namespace PopugAccounting.Logic
                     //TODO, если еще не назначили деньги
                     await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Complete, Date = popug.EventDate, Money = task.Amount, UserId = task.AssignedUserId });
                     break;
-
-                default: throw new NotImplementedException();
             }
         }
     }

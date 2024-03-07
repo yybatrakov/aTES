@@ -25,10 +25,9 @@ namespace PopugAccounting.Logic
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.Tasks.Stream.Created + "_v1":
-                    var user = SerializeExtensions.FromJson<User>(popug.Data.ToString());
-                    await AccountingLogic.AddOrUpdateTask(SerializeExtensions.FromJson<PopugTask>(popug.Data.ToString()));
+                    var task = SerializeExtensions.FromJson<PopugTaskStreamEvent>(popug.Data.ToString());
+                    await AccountingLogic.AddOrUpdateTask(SerializeExtensions.FromJson<PopugTaskStreamEvent>(popug.Data.ToString()));
                     break;
-                default: throw new NotImplementedException();
             }
 
         }
