@@ -8,7 +8,7 @@ using PopugTaskTracker;
 namespace PopugTaskTracker.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240301024136_InitialCreate")]
+    [Migration("20240307022013_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,9 @@ namespace PopugTaskTracker.Migrations
             modelBuilder.Entity("PopugCommon.KafkaMessages.User", b =>
                 {
                     b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PublicUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserName")
@@ -39,14 +42,23 @@ namespace PopugTaskTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Amount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("AssignedUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Fee")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

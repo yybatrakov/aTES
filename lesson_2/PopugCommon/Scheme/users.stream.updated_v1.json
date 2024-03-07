@@ -1,0 +1,50 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "EventId": {
+      "type": "string"
+    },
+    "EventDate": {
+      "type": "string"
+    },
+    "Event": {
+      "type": "string",
+      "enum": [ "users.stream.updated" ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [ "v1" ]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "UserId": {
+          "type": "string"
+        },
+        "PublicUserId": {
+          "type": "string"
+        },
+        "UserName": {
+          "type": "string"
+        },
+        "UserRole": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "UserId",
+        "PublicUserId",
+        "UserName",
+        "UserRole"
+      ]
+    }
+  },
+  "required": [
+    "EventId",
+    "EventDate",
+    "Event",
+    "Version",
+    "Data"
+  ]
+}

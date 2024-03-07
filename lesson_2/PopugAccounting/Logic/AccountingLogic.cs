@@ -28,7 +28,7 @@ namespace PopugAccounting.Logic
         {
             var balance = new Balance() { UserId = userId, Money = 0 };
             await dataContext.Balances.AddAsync(balance);
-            Kafka.Produce(KafkaTopics.BalanceStream, balance.UserId, new StreamEvent<Balance>(balance, Operation.Create).ToJson());
+            //Kafka.Produce(KafkaTopics.BalanceStream, balance.UserId, new StreamEvent<Balance>(balance, Operation.Created).ToJson());
         }
         public async Task UpdateBalance(BalanceTransaction transaction)
         {
@@ -38,8 +38,8 @@ namespace PopugAccounting.Logic
             dataContext.Balances.Update(balance);
             await dataContext.SaveChangesAsync();
 
-            Kafka.Produce(KafkaTopics.BalanceStream, balance.UserId, new StreamEvent<Balance>(balance, Operation.Update).ToJson());
-            Kafka.Produce(KafkaTopics.BalanceTransactionStream, balance.UserId, new StreamEvent<BalanceTransaction>(transaction, Operation.Create).ToJson());
+            //Kafka.Produce(KafkaTopics.BalanceStream, balance.UserId, new StreamEvent<Balance>(balance, Operation.Updated).ToJson());
+            //Kafka.Produce(KafkaTopics.BalanceTransactionStream, balance.UserId, new StreamEvent<BalanceTransaction>(transaction, Operation.Created).ToJson());
         }
     }
 }

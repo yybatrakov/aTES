@@ -36,13 +36,13 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
             {
                 UserId = identity.Id,
                 PublicUserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Operation.Create).ToJson());
+            }, Messages.Users.Stream.Created, "v1"));
 
             return identity;
         }
@@ -53,13 +53,13 @@ namespace AuthorizationServer.Controllers
             await userManager.RemoveFromRolesAsync(identity, userRoles);
             var result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
             {
                 UserId = identity.Id,
                 PublicUserId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Operation.Update).ToJson());
+            }, Messages.Users.Stream.Updated, "v1"));
 
             return identity;
         }
@@ -67,13 +67,13 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(userBeak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamEvent<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new User()
             {
                 UserId = identity.Id,
                 PublicUserId = identity.Id,
-                UserName = identity.UserName
-            }, Operation.Delete).ToJson());
-
+                UserName = identity.UserName,
+                UserRole = string.Empty
+            }, Messages.Users.Stream.Deleted, "v1"));
             return identity;
         }
     }

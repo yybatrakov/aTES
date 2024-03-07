@@ -1,12 +1,14 @@
 ﻿using Confluent.Kafka;
+using PopugCommon.KafkaMessages;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace PopugCommon.Kafka
 {
     public static class Kafka
     {
-        public static void Produce(string topic, string key, string message)
+        public async static Task Produce(string topic, string key, PopugMessage message)
         {
             var config = new ProducerConfig
             {
@@ -17,6 +19,12 @@ namespace PopugCommon.Kafka
                 MessageTimeoutMs = 30000,
                 MessageMaxBytes = 16777215
             };
+
+            /*
+            var isValid = await message.Validate();
+            if (!isValid)
+                throw new Exception("JSON Schema invalid");
+            */
 
             using (var producer = new ProducerBuilder<string, string>(config)
                     .SetKeySerializer(new StringSerializer())
@@ -30,7 +38,7 @@ namespace PopugCommon.Kafka
                         new Message<string, string>
                         {
                             Key = key,
-                            Value = message
+                            Value = message.ToJson()
                         },
                         d =>
                         {

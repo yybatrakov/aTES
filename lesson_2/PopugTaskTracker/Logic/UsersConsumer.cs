@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
+using System;
 using System.Threading.Tasks;
 
 namespace PopugTaskTracker.Logic
@@ -17,16 +18,18 @@ namespace PopugTaskTracker.Logic
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var user = SerializeExtensions.FromJson<StreamEvent<User>>(message.Value);
-            switch (user.Operation)
+            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
+            
+            switch ($"{popug.Event}_{popug.Version}")
             {
-                case Operation.Create:
-                case Operation.Update:
-                    await usersLogic.AddOrUpdate(user.Value);
+                case Messages.Users.Stream.Created + "_v1":
+                case Messages.Users.Stream.Updated + "_v1":
+                    await usersLogic.AddOrUpdate(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
                     break;
-                case Operation.Delete:
-                    await usersLogic.Delete(user.Value);
+                case Messages.Users.Stream.Deleted + "_v1":
+                    await usersLogic.Delete(SerializeExtensions.FromJson<User>(popug.Data.ToString()));
                     break;
+                default: throw new NotImplementedException();
             }
         }
     }

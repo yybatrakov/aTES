@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PopugTaskTracker.Logic;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace PopugTaskTracker.Controllers
 
         [HttpPost("Create")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
-        public async Task<PopugTask> Create(string description) => await taskLogic.CreateTask(new PopugTask() { Description = description });
+        public async Task<PopugTask> Create(string description) => await taskLogic.CreateTask(new PopugTask() { Description = description, PublicId = Guid.NewGuid().ToString() });
 
         [HttpPost("Reassign")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin,Manager")]

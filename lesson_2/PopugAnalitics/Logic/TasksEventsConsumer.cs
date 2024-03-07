@@ -15,7 +15,7 @@ namespace PopugAnalitics.Logic
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var user = message.Value.FromJson<BussinessEvent<Task>>();
+            //var user = message.Value.FromJson<BussinessEvent<Task>>();
         }
     }
 }

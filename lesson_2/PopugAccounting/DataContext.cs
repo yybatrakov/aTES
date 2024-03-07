@@ -3,7 +3,6 @@
     using Microsoft.EntityFrameworkCore;
     using PopugCommon.KafkaMessages;
     using PopugTaskTracker;
-    using System;
 
     public class DataContext : DbContext
     {
@@ -20,24 +19,5 @@
         {
             base.OnModelCreating(builder);
         }
-    }
-
-    public class Balance
-    {
-        public string UserId { get; set; }
-        public int Money { get; set; }
-    }
-    public class BalanceTransaction
-    {
-        public string UserId { get; set; }
-        public int Money { get; set; }
-        public string Type { get; set; }
-        public DateTime Date { get; set; }
-    }
-    public static class TransactionType
-    {
-        public const string Assign = "Assign";
-        public const string Complete = "Complete";
-        public const string Payment = "Payment";
     }
 }

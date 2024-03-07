@@ -18,7 +18,7 @@ namespace PopugAccounting.Logic
         
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            var user = message.Value.FromJson<StreamEvent<Task>>();
+            //var user = message.Value.FromJson<StreamEvent<Task>>();
         }
     }
 }
