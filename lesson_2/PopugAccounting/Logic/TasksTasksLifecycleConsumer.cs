@@ -1,6 +1,8 @@
 ﻿using Confluent.Kafka;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
+using PopugTaskTracker;
+using System;
 using System.Threading.Tasks;
 
 namespace PopugAccounting.Logic
@@ -18,7 +20,34 @@ namespace PopugAccounting.Logic
 
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            //var user = message.Value.FromJson<BussinessEvent<Task>>();
+            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
+
+            switch ($"{popug.Event}_{popug.Version}")
+            {
+                case Messages.Tasks.Assigned + "_v1":
+                    var taskAssigned = SerializeExtensions.FromJson<TaskAssignedEvent>(popug.Data.ToString());
+                    var task = await AccountingLogic.GetTask(taskAssigned.PublicId);
+                    //TODO, если еще не назначили деньги
+                    await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
+                    break;
+                case Messages.Tasks.ReAssigned + "_v1":
+                    var tasksReassigned = SerializeExtensions.FromJson<TasksReassignedEvent>(popug.Data.ToString());
+                    foreach (var t in tasksReassigned.Tasks)
+                    {
+                        task = await AccountingLogic.GetTask(t.PublicId);
+                        //TODO, если еще не назначили деньги
+                        await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = t.AssignedUserId });
+                    }
+                    break;
+                case Messages.Tasks.Completed + "_v1":
+                    var taskCompleted = SerializeExtensions.FromJson<TaskCompletedEvent>(popug.Data.ToString());
+                    task = await AccountingLogic.GetTask(taskCompleted.PublicId);
+                    //TODO, если еще не назначили деньги
+                    await AccountingLogic.UpdateBalance(new BalanceTransaction() { Type = TransactionType.Complete, Date = popug.EventDate, Money = task.Amount, UserId = task.AssignedUserId });
+                    break;
+
+                default: throw new NotImplementedException();
+            }
         }
     }
 }

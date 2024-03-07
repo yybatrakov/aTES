@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PopugAccounting.Logic;
 using PopugCommon.Kafka;
+using PopugTaskTracker.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace PopugAccounting
             }, ServiceLifetime.Singleton);
 
             services.AddTransient<AccountingLogic>();
+            services.AddSingleton<KafkaConsumer, UsersConsumer>();
             services.AddSingleton<KafkaConsumer, TasksTasksLifecycleConsumer>();
             services.AddSingleton<KafkaConsumer, TasksStreamConsumer>();
 

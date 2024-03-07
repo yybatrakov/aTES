@@ -1,6 +1,6 @@
 ﻿namespace PopugTaskTracker
 {
-    public class TaskCompletedMessage
+    public class TaskCompletedEvent
     {
         public string PublicId { get; set; }
     }

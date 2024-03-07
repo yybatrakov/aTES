@@ -54,7 +54,7 @@ namespace PopugTaskTracker.Logic
             task.IsCompleted= true;
             await Update(task);
             await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, Messages.Tasks.Stream.Updated, "v1"));
-            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskCompletedMessage() { PublicId = task.PublicId}, Messages.Tasks.Completed, "v1"));
+            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskCompletedEvent() { PublicId = task.PublicId}, Messages.Tasks.Completed, "v1"));
             return task;
         }
 

@@ -1,6 +1,8 @@
 ﻿using Confluent.Kafka;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
+using PopugTaskTracker;
+using System;
 using System.Threading.Tasks;
 
 namespace PopugAccounting.Logic
@@ -18,7 +20,17 @@ namespace PopugAccounting.Logic
         
         public async override Task OnMessage(Message<Ignore, string> message)
         {
-            //var user = message.Value.FromJson<StreamEvent<Task>>();
+            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
+
+            switch ($"{popug.Event}_{popug.Version}")
+            {
+                case Messages.Tasks.Stream.Created + "_v1":
+                    var user = SerializeExtensions.FromJson<User>(popug.Data.ToString());
+                    await AccountingLogic.AddOrUpdateTask(SerializeExtensions.FromJson<PopugTask>(popug.Data.ToString()));
+                    break;
+                default: throw new NotImplementedException();
+            }
+
         }
     }
 }
