@@ -1,0 +1,62 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "EventId": {
+      "type": "string"
+    },
+    "EventDate": {
+      "type": "string"
+    },
+    "Event": {
+      "type": "string",
+      "enum": [ "task.stream.created" ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [ "v1" ]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer"
+        },
+        "PublicId": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "IsCompleted": {
+          "type": "boolean"
+        },
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "Fee": {
+          "type": "integer"
+        },
+        "Amount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "Id",
+        "PublicId",
+        "Description",
+        "IsCompleted",
+        "AssignedUserId",
+        "Fee",
+        "Amount"
+      ]
+    }
+  },
+  "required": [
+    "EventId",
+    "EventDate",
+    "Event",
+    "Version",
+    "Data"
+  ]
+}
