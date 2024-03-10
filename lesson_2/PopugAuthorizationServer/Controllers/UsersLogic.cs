@@ -42,7 +42,7 @@ namespace AuthorizationServer.Controllers
                 PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Messages.Users.Stream.Created, "v1"));
+            }, KafkaMessages.Users.Stream.Created, "v1"));
 
             return identity;
         }
@@ -59,7 +59,7 @@ namespace AuthorizationServer.Controllers
                 PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Messages.Users.Stream.Updated, "v1"));
+            }, KafkaMessages.Users.Stream.Updated, "v1"));
 
             return identity;
         }
@@ -73,7 +73,7 @@ namespace AuthorizationServer.Controllers
                 PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = string.Empty
-            }, Messages.Users.Stream.Deleted, "v1"));
+            }, KafkaMessages.Users.Stream.Deleted, "v1"));
             return identity;
         }
     }

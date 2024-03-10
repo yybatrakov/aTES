@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "task.stream.updated" ]
+      "enum": [ "users.stream.created", "users.stream.updated", "users.stream.deleted" ]
     },
     "Version": {
       "type": "string",
@@ -19,36 +19,24 @@
     "Data": {
       "type": "object",
       "properties": {
-        "Id": {
-          "type": "integer"
+        "UserId": {
+          "type": "string"
         },
         "PublicId": {
           "type": "string"
         },
-        "Description": {
+        "UserName": {
           "type": "string"
         },
-        "IsCompleted": {
-          "type": "boolean"
-        },
-        "AssignedUserId": {
+        "UserRole": {
           "type": "string"
-        },
-        "Fee": {
-          "type": "integer"
-        },
-        "Amount": {
-          "type": "integer"
         }
       },
       "required": [
-        "Id",
+        "UserId",
         "PublicId",
-        "Description",
-        "IsCompleted",
-        "AssignedUserId",
-        "Fee",
-        "Amount"
+        "UserName",
+        "UserRole"
       ]
     }
   },

@@ -22,7 +22,7 @@ namespace PopugAccounting.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Tasks.Assigned + "_v1":
+                case KafkaMessages.Tasks.Assigned + "_v1":
                     var taskAssigned = SerializeExtensions.FromJson<TaskAssignedEvent>(popug.Data.ToString());
                     var task = await AccountingLogic.GetTask(taskAssigned.PublicId);
                     if (task == null)
@@ -36,7 +36,7 @@ namespace PopugAccounting.Logic
                     }
                     await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
                     break;
-                case Messages.Tasks.ReAssigned + "_v1":
+                case KafkaMessages.Tasks.ReAssigned + "_v1":
                     var tasksReassigned = SerializeExtensions.FromJson<TasksReassignedEvent>(popug.Data.ToString());
                     foreach (var t in tasksReassigned.Tasks)
                     {
@@ -44,7 +44,7 @@ namespace PopugAccounting.Logic
                         await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = t.AssignedUserId });
                     }
                     break;
-                case Messages.Tasks.Completed + "_v1":
+                case KafkaMessages.Tasks.Completed + "_v1":
                     var taskCompleted = SerializeExtensions.FromJson<TaskCompletedEvent>(popug.Data.ToString());
                     task = await AccountingLogic.GetTask(taskCompleted.PublicId);
                     //TODO, если еще не назначили деньги

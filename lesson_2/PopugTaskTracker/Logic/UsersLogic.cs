@@ -1,8 +1,4 @@
-﻿using Confluent.Kafka;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using PopugCommon.Kafka;
+﻿using Microsoft.EntityFrameworkCore;
 using PopugCommon.KafkaMessages;
 using System.Linq;
 using System.Threading.Tasks;

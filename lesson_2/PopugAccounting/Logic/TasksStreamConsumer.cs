@@ -22,7 +22,7 @@ namespace PopugAccounting.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Tasks.Stream.Created + "_v1":
+                case KafkaMessages.Tasks.Stream.Created + "_v1":
                     var task = SerializeExtensions.FromJson<TaskStreamEvent>(popug.Data.ToString());
                     var taskDb = new TaskDb()
                     {

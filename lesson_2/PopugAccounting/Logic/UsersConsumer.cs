@@ -23,13 +23,10 @@ namespace PopugAccounting.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Users.Stream.Created + "_v1":
-                case Messages.Users.Stream.Updated + "_v1":
-                    
-
+                case KafkaMessages.Users.Stream.Created + "_v1":
+                case KafkaMessages.Users.Stream.Updated + "_v1":
                     var user = popug.Data.ToString().FromJson<UserStreamEvent>();
-
-                    await AccountingLogic.CreateBalance(user.UserId);
+                    await AccountingLogic.CreateBalance(user.PublicId);
                     break;
             }
         }

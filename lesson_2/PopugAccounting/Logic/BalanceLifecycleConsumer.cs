@@ -22,7 +22,7 @@ namespace PopugAccounting.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Balances.PaymentProcessd + "_v1":
+                case KafkaMessages.Balances.PaymentProcessd + "_v1":
                     var paymentEvent = SerializeExtensions.FromJson<BalancePaymentProcessedEvent>(popug.Data.ToString());
                     await AccountingLogic.SendPaymentNotification(paymentEvent);
                     break;

@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PopugAccounting.Controllers;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using PopugTaskTracker;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,19 +14,26 @@ namespace PopugAccounting.Logic
     {
         private readonly DataContext dataContext;
 
-        public AccountingLogic(DataContext dataContext)
+        public AccountingLogic(DbContextOptions options)
         {
-            this.dataContext = dataContext;
+            this.dataContext = new DataContext(options);
         }
+
         public async Task<TaskDb> GetTask(string public_id)
         {
             return await dataContext.PopugTasks.Where(t => t.PublicId == public_id).FirstOrDefaultAsync();
+        }
+
+        public async Task<TaskDb> GetTask(int id)
+        {
+            return await dataContext.PopugTasks.Where(t => t.Id == id).FirstOrDefaultAsync();
         }
         public async Task<TaskDb> AddOrUpdateTask(TaskDb task)
         {
             var taskDb = await GetTask(task.PublicId);
             if (taskDb != null)
             {
+                taskDb.PublicId = task.PublicId;
                 taskDb.Title = task.Title ?? taskDb.Title;
                 taskDb.AssignedUserId = task.AssignedUserId ?? taskDb.AssignedUserId;
                 taskDb.Description = task.Description ?? taskDb.Description;
@@ -36,6 +45,7 @@ namespace PopugAccounting.Logic
             {
                 var rnd = new Random();
                 taskDb = new TaskDb();
+                taskDb.PublicId = task.PublicId;
                 taskDb.Fee = rnd.Next(10, 20);
                 taskDb.Amount = rnd.Next(20, 40);
                 taskDb.Title = task.Title;
@@ -44,10 +54,9 @@ namespace PopugAccounting.Logic
                 taskDb.IsCompleted = task.IsCompleted;
                 await dataContext.PopugTasks.AddAsync(taskDb);
                 await dataContext.SaveChangesAsync();
-                await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, Messages.Tasks.Stream.Updated, "v1"));
             }
 
-            return await GetTask(task.PublicId);
+            return await GetTask(task.Id);
         }
 
 
@@ -91,7 +100,7 @@ namespace PopugAccounting.Logic
                 Type = transaction.Type
             };
 
-            await Kafka.Produce(KafkaTopics.BalanceTransactionStream, balance.Id.ToString(), new PopugMessage(transactionEvent, Messages.BalanceTransaction.Stream.Created, "v1"));
+            await Kafka.Produce(KafkaTopics.BalanceTransactionStream, balance.Id.ToString(), new PopugMessage(transactionEvent, KafkaMessages.BalanceTransaction.Stream.Created, "v1"));
         }
         public Task SendPaymentNotification(BalancePaymentProcessedEvent balancePaymentProcessedEvent)
         {
@@ -99,6 +108,21 @@ namespace PopugAccounting.Logic
                 //Из требований не понял кому нужно письмо. Оно тут отсылается
             } );
             return Task.CompletedTask;
+        }
+
+        public async Task<List<TopManagementStatisticResponse>> GetTopManagementMoneyStatistics()
+        {
+            return await dataContext.BalanceTransactions.Where(b => (b.Type == TransactionType.Assign || b.Type == TransactionType.Complete)).GroupBy(t => t.Date.Date).Select(g => new TopManagementStatisticResponse() { Date = g.Key, Money = -g.Sum(t => t.Money) }).ToListAsync(); 
+        }
+        
+
+        public Task<BalanceDb> GetBalance(string userId)
+        {
+            return dataContext.Balances.Where(b => b.UserId == userId).SingleOrDefaultAsync();
+        }
+        public Task<List<BalanceTransactionDb>> GetBalanceTransactions(string userId)
+        {
+            return dataContext.BalanceTransactions.Where(b => b.UserId == userId).ToListAsync();
         }
     }
 }

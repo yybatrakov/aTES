@@ -22,7 +22,7 @@ namespace PopugAnalitics.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.BalanceTransaction.Stream.Created + "_v1":
+                case KafkaMessages.BalanceTransaction.Stream.Created + "_v1":
                     var transactionMessage = popug.Data.ToString().FromJson<BalanceTransactionStreamEvent>();
                     
                     await AnaliticsLogic.Add(new BalanceTransactionDb() { 

@@ -12,7 +12,14 @@ namespace PopugCommon.Kafka
         {
             try
             {
-                var schemaRaw = await File.ReadAllTextAsync($"/src/PopugCommon/SchemaRegistry/{message.Event}_{message.Version}.json");
+                var e = message.Event;
+                var ver = message.Version;
+
+                //костыль, чтобы схемы не плодить
+                if (e.Contains("stream"))
+                    e = e.Replace(".created", string.Empty).Replace(".updated", string.Empty).Replace(".deleted", string.Empty);
+
+                var schemaRaw = await File.ReadAllTextAsync($"/src/PopugCommon/SchemaRegistry/{e}_{ver}.json");
                 var schema = JSchema.Parse(schemaRaw);
                 return JObject.FromObject(message).IsValid(schema);
             }

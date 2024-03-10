@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "task.stream.created" ]
+      "enum": [ "task.stream.created", "task.stream.updated", "task.stream.deleted" ]
     },
     "Version": {
       "type": "string",
@@ -28,17 +28,14 @@
         "Description": {
           "type": "string"
         },
+        "Title": {
+          "type": "string"
+        },
         "IsCompleted": {
           "type": "boolean"
         },
         "AssignedUserId": {
           "type": "string"
-        },
-        "Fee": {
-          "type": "integer"
-        },
-        "Amount": {
-          "type": "integer"
         }
       },
       "required": [
@@ -47,8 +44,7 @@
         "Description",
         "IsCompleted",
         "AssignedUserId",
-        "Fee",
-        "Amount"
+        "Title"
       ]
     }
   },

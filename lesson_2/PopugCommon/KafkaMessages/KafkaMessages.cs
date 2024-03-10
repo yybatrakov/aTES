@@ -3,7 +3,7 @@ using System;
 
 namespace PopugCommon.KafkaMessages
 {
-    public static class Messages
+    public static class KafkaMessages
     {
         public static class Tasks
         {

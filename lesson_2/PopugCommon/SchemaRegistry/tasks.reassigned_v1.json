@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "task.reassigned" ]
+      "enum": [ "tasks.reassigned" ]
     },
     "Version": {
       "type": "string",

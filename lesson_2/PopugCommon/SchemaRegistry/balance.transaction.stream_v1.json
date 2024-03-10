@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "users.stream.deleted" ]
+      "enum": [ "balance.transaction.stream.created" ]
     },
     "Version": {
       "type": "string",
@@ -19,24 +19,28 @@
     "Data": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "integer"
+        },
         "UserId": {
           "type": "string"
         },
-        "PublicId": {
+        "Money": {
+          "type": "integer"
+        },
+        "Type": {
           "type": "string"
         },
-        "UserName": {
-          "type": "string"
-        },
-        "UserRole": {
+        "Date": {
           "type": "string"
         }
       },
       "required": [
+        "id",
         "UserId",
-        "PublicId",
-        "UserName",
-        "UserRole"
+        "Money",
+        "Type",
+        "Date"
       ]
     }
   },

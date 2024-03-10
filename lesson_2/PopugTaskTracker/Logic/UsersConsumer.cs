@@ -20,11 +20,11 @@ namespace PopugTaskTracker.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case Messages.Users.Stream.Created + "_v1":
-                case Messages.Users.Stream.Updated + "_v1":
+                case KafkaMessages.Users.Stream.Created + "_v1":
+                case KafkaMessages.Users.Stream.Updated + "_v1":
                     await usersLogic.AddOrUpdate(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
                     break;
-                case Messages.Users.Stream.Deleted + "_v1":
+                case KafkaMessages.Users.Stream.Deleted + "_v1":
                     await usersLogic.Delete(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
                     break;
                 default: throw new NotImplementedException();
