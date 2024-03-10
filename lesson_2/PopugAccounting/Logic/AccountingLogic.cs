@@ -98,7 +98,7 @@ namespace PopugAccounting.Logic
             {
                 id = transaction.id,
                 UserId = transaction.UserId,
-                Money = balance.Money,
+                Money = transaction.Money,
                 Date = transaction.Date,
                 Type = transaction.Type
             };
