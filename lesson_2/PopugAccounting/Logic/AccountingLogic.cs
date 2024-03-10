@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static PopugCommon.KafkaMessages.KafkaMessages;
 
 namespace PopugAccounting.Logic
 {
@@ -68,9 +69,11 @@ namespace PopugAccounting.Logic
                 UserId = b.UserId,
                 Type = TransactionType.Payment,
                 Date = DateTime.Now,
-                Money = b.Money
+                Money = -b.Money
             }).ToList();
             transactions.ForEach(async t => await UpdateBalance(t));
+            var e = new BalancePaymentProcessedEvent() { Transactions = transactions.Select(t => new BalancePaymentTransaction() { UserId = t.UserId, Money = t.Money } ).ToList()};
+            await Kafka.Produce(KafkaTopics.BalanceLifecycle, DateTime.Now.Ticks.ToString(), new PopugMessage(e, KafkaMessages.Balances.PaymentProcessd, "v1"));
         }
         public async Task CreateBalance(string userId)
         {

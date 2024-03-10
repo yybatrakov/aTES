@@ -1,0 +1,55 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "EventId": {
+      "type": "string"
+    },
+    "EventDate": {
+      "type": "string"
+    },
+    "Event": {
+      "type": "string",
+      "enum": [ "task.payment.processed" ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [ "v1" ]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "Transactions": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "UserId": {
+                  "type": "string"
+                },
+                "Money": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "UserId",
+                "Money"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "Transactions"
+      ]
+    }
+  },
+  "required": [
+    "EventId",
+    "EventDate",
+    "Event",
+    "Version",
+    "Data"
+  ]
+}
