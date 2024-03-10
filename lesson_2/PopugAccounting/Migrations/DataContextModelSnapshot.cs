@@ -80,6 +80,9 @@ namespace PopugAccounting.Migrations
                     b.Property<string>("PublicId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Title")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.ToTable("PopugTasks");

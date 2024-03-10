@@ -3,11 +3,8 @@ using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using PopugTaskTracker;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using static PopugCommon.KafkaMessages.Messages;
 
 namespace PopugAccounting.Logic
 {
@@ -21,15 +18,17 @@ namespace PopugAccounting.Logic
         }
         public async Task<TaskDb> GetTask(string public_id)
         {
-            return await dataContext.PopugTasks.Where(t => t.PublicId == t.PublicId).FirstOrDefaultAsync();
+            return await dataContext.PopugTasks.Where(t => t.PublicId == public_id).FirstOrDefaultAsync();
         }
-        public async Task<TaskDb> AddOrUpdateTask(TaskStreamEvent task)
+        public async Task<TaskDb> AddOrUpdateTask(TaskDb task)
         {
             var taskDb = await GetTask(task.PublicId);
             if (taskDb != null)
             {
-                taskDb.AssignedUserId = task.AssignedUserId;
-                taskDb.Description = task.Description;
+                taskDb.Title = task.Title ?? taskDb.Title;
+                taskDb.AssignedUserId = task.AssignedUserId ?? taskDb.AssignedUserId;
+                taskDb.Description = task.Description ?? taskDb.Description;
+                taskDb.IsCompleted = task.IsCompleted;
                 dataContext.PopugTasks.Update(taskDb);
                 await dataContext.SaveChangesAsync();
             }
@@ -39,9 +38,10 @@ namespace PopugAccounting.Logic
                 taskDb = new TaskDb();
                 taskDb.Fee = rnd.Next(10, 20);
                 taskDb.Amount = rnd.Next(20, 40);
+                taskDb.Title = task.Title;
                 taskDb.Description = task.Description;
                 taskDb.AssignedUserId = task.AssignedUserId;
-
+                taskDb.IsCompleted = task.IsCompleted;
                 await dataContext.PopugTasks.AddAsync(taskDb);
                 await dataContext.SaveChangesAsync();
                 await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, Messages.Tasks.Stream.Updated, "v1"));
@@ -49,6 +49,8 @@ namespace PopugAccounting.Logic
 
             return await GetTask(task.PublicId);
         }
+
+
         public async Task ProcessPayment()
         {
             var balances = await dataContext.Balances.Where(b => b.Money > 0).ToListAsync();

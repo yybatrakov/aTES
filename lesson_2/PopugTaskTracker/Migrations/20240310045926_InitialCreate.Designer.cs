@@ -8,7 +8,7 @@ using PopugTaskTracker;
 namespace PopugTaskTracker.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307081231_InitialCreate")]
+    [Migration("20240310045926_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,22 +23,19 @@ namespace PopugTaskTracker.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("AssignedUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Fee")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

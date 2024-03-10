@@ -13,11 +13,10 @@ namespace PopugTaskTracker.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     PublicId = table.Column<string>(type: "TEXT", nullable: true),
+                    Title = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    AssignedUserId = table.Column<string>(type: "TEXT", nullable: true),
-                    Fee = table.Column<int>(type: "INTEGER", nullable: false),
-                    Amount = table.Column<int>(type: "INTEGER", nullable: false)
+                    AssignedUserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

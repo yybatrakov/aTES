@@ -9,7 +9,7 @@ using PopugAccounting;
 namespace PopugAccounting.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240307081220_InitialCreate")]
+    [Migration("20240310050002_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,9 @@ namespace PopugAccounting.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

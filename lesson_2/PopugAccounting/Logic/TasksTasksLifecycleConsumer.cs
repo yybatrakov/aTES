@@ -29,9 +29,13 @@ namespace PopugAccounting.Logic
                     var task = await AccountingLogic.GetTask(taskAssigned.PublicId);
                     if (task == null)
                     {
-                        throw new NotImplementedException("еще не назначили деньги");
+                        task = new TaskDb()
+                        {
+                            PublicId = taskAssigned.PublicId,
+                            AssignedUserId = taskAssigned.AssignedUserId
+                        };
+                        await AccountingLogic.AddOrUpdateTask(task);
                     }
-                    //TODO, если еще не назначили деньги
                     await AccountingLogic.UpdateBalance(new BalanceTransactionDb() { Type = TransactionType.Assign, Date = popug.EventDate, Money = -task.Fee, UserId = taskAssigned.AssignedUserId });
                     break;
                 case Messages.Tasks.ReAssigned + "_v1":

@@ -26,7 +26,16 @@ namespace PopugAccounting.Logic
             {
                 case Messages.Tasks.Stream.Created + "_v1":
                     var task = SerializeExtensions.FromJson<TaskStreamEvent>(popug.Data.ToString());
-                    await AccountingLogic.AddOrUpdateTask(SerializeExtensions.FromJson<TaskStreamEvent>(popug.Data.ToString()));
+                    var taskDb = new TaskDb()
+                    {
+                        PublicId = task.PublicId,
+                        Title = task.Title,
+                        Description = task.Description,
+                        IsCompleted = task.IsCompleted,
+                        AssignedUserId = task.AssignedUserId
+                    };
+
+                    await AccountingLogic.AddOrUpdateTask(taskDb);
                     break;
             }
 
