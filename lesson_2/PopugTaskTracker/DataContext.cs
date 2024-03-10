@@ -10,6 +10,7 @@
         public string Description { get; set; }
         public bool IsCompleted { get; set; } = false;
         public string AssignedUserId { get; set; }
+        public string JiraId { get; set; }
         
     }
 

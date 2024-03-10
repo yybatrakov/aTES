@@ -4,6 +4,7 @@ using PopugCommon.KafkaMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PopugTaskTracker.Logic
@@ -50,16 +51,19 @@ namespace PopugTaskTracker.Logic
             var task = await Get(taskId);
             task.IsCompleted= true;
             await Update(task);
-            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v1"));
+            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v2"));
             await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskCompletedEvent() { PublicId = task.PublicId}, KafkaMessages.Tasks.Completed, "v1"));
             return task;
         }
 
         public async Task<TaskDb> CreateTask(TaskDb task)
         {
+            if (Regex.IsMatch(task.Title, @"[\]\[]"))
+                throw new Exception("Incorrect charactrers");
+
             task = (await AssignTasks(new List<TaskDb> { task })).Single();
             await Update(task);
-            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Created, "v1"));
+            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Created, "v2"));
             await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskAssignedEvent() { PublicId = task.PublicId, AssignedUserId = task.AssignedUserId }, KafkaMessages.Tasks.Assigned, "v1"));
             return task;
         }
@@ -70,7 +74,7 @@ namespace PopugTaskTracker.Logic
             foreach (var task in tasks)
             {
                 await Update(task);
-                await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v1"));
+                await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v2"));
             }
             
             var e = new TasksReassignedEvent() { Tasks = tasks.Select(t => new TaskAssignedEvent() { PublicId = t.PublicId, AssignedUserId = t.AssignedUserId }).ToList() };

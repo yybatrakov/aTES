@@ -33,7 +33,7 @@ namespace PopugTaskTracker.Controllers
 
         [HttpPost("Create")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName)]
-        public async Task<TaskDb> Create(string title, string description) => await taskLogic.CreateTask(new TaskDb() { Title = title, Description = description, PublicId = Guid.NewGuid().ToString() });
+        public async Task<TaskDb> Create(string title, string description) => await taskLogic.CreateTask(new TaskDb() { Title = title, Description = description, JiraId = Guid.NewGuid().ToString(), PublicId = Guid.NewGuid().ToString() });
 
         [HttpPost("Reassign")]
         [Authorize(AuthenticationSchemes = PopugTokenScheme.SchemeName, Roles = "Admin,Manager")]

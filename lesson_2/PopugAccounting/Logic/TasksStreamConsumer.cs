@@ -35,6 +35,19 @@ namespace PopugAccounting.Logic
 
                     await AccountingLogic.AddOrUpdateTask(taskDb);
                     break;
+                case KafkaMessages.Tasks.Stream.Created + "_v2":
+                    var task_v2  = SerializeExtensions.FromJson<TaskStreamEvent_2>(popug.Data.ToString());
+                    taskDb = new TaskDb()
+                    {
+                        PublicId = task_v2.PublicId,
+                        Title = task_v2.Title,
+                        Description = task_v2.Description,
+                        IsCompleted = task_v2.IsCompleted,
+                        AssignedUserId = task_v2.AssignedUserId
+                    };
+
+                    await AccountingLogic.AddOrUpdateTask(taskDb);
+                    break;
             }
 
         }
