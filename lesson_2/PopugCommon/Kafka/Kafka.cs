@@ -13,18 +13,16 @@ namespace PopugCommon.Kafka
             var config = new ProducerConfig
             {
                 BootstrapServers = "kafka:9092",
-                //BootstrapServers = "host.docker.internal:9092",
                 ClientId = Dns.GetHostName(),
                 Acks = Acks.All,
                 MessageTimeoutMs = 30000,
                 MessageMaxBytes = 16777215
             };
 
-            /*
+            
             var isValid = await message.Validate();
             if (!isValid)
                 throw new Exception("JSON Schema invalid");
-            */
 
             using (var producer = new ProducerBuilder<string, string>(config)
                     .SetKeySerializer(new StringSerializer())

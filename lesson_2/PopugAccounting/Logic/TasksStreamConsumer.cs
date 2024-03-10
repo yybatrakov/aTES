@@ -17,11 +17,9 @@ namespace PopugAccounting.Logic
         {
             AccountingLogic = accountingLogic;
         }
-        
-        public async override Task OnMessage(Message<Ignore, string> message)
-        {
-            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
 
+        public async override Task OnMessage(PopugMessage popug)
+        {
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.Tasks.Stream.Created + "_v1":

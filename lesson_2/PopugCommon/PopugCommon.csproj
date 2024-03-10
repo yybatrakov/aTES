@@ -5,39 +5,39 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Scheme\tasks .completed_v1.json" />
-    <None Remove="Scheme\tasks.assigned_v1.json" />
-    <None Remove="Scheme\tasks.reassigned_v1.json" />
-    <None Remove="Scheme\tasks.stream.created_v1.json" />
-    <None Remove="Scheme\tasks.stream.updated_v1.json" />
-    <None Remove="Scheme\users.stream.created_v1.json" />
-    <None Remove="Scheme\users.stream.deleted_v1.json" />
-    <None Remove="Scheme\users.stream.updated_v1.json" />
+    <None Remove="SchemaRegistry\tasks.assigned_v1.json" />
+    <None Remove="SchemaRegistry\tasks.completed_v1.json" />
+    <None Remove="SchemaRegistry\tasks.reassigned_v1.json" />
+    <None Remove="SchemaRegistry\tasks.stream.created_v1.json" />
+    <None Remove="SchemaRegistry\tasks.stream.updated_v1.json" />
+    <None Remove="SchemaRegistry\users.stream.created_v1.json" />
+    <None Remove="SchemaRegistry\users.stream.deleted_v1.json" />
+    <None Remove="SchemaRegistry\users.stream.updated_v1.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Scheme\tasks .completed_v1.json">
+    <Resource Include="SchemaRegistry\tasks.completed_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\tasks.assigned_v1.json">
+    <Resource Include="SchemaRegistry\tasks.assigned_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\tasks.reassigned_v1.json">
+    <Resource Include="SchemaRegistry\tasks.reassigned_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\tasks.stream.created_v1.json">
+    <Resource Include="SchemaRegistry\tasks.stream.created_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\tasks.stream.updated_v1.json">
+    <Resource Include="SchemaRegistry\tasks.stream.updated_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\users.stream.deleted_v1.json">
+    <Resource Include="SchemaRegistry\users.stream.deleted_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\users.stream.updated_v1.json">
+    <Resource Include="SchemaRegistry\users.stream.updated_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Scheme\users.stream.created_v1.json">
+    <Resource Include="SchemaRegistry\users.stream.created_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

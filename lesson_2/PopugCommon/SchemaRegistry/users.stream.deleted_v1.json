@@ -22,7 +22,7 @@
         "UserId": {
           "type": "string"
         },
-        "PublicUserId": {
+        "PublicId": {
           "type": "string"
         },
         "UserName": {
@@ -34,7 +34,7 @@
       },
       "required": [
         "UserId",
-        "PublicUserId",
+        "PublicId",
         "UserName",
         "UserRole"
       ]

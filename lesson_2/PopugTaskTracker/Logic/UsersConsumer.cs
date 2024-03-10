@@ -16,10 +16,8 @@ namespace PopugTaskTracker.Logic
         }
         public override string MessageType => KafkaTopics.UsersStream;
 
-        public async override Task OnMessage(Message<Ignore, string> message)
+        public async override Task OnMessage(PopugMessage popug)
         {
-            var popug = SerializeExtensions.FromJson<PopugMessage>(message.Value);
-            
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.Users.Stream.Created + "_v1":

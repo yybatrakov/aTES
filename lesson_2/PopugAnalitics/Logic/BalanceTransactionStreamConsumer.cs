@@ -18,10 +18,8 @@ namespace PopugAnalitics.Logic
             AnaliticsLogic = analiticsLogic;
         }
 
-        public async override Task OnMessage(Message<Ignore, string> message)
+        public async override Task OnMessage(PopugMessage popug)
         {
-            var popug = message.Value.FromJson<PopugMessage>();
-
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.BalanceTransaction.Stream.Created + "_v1":

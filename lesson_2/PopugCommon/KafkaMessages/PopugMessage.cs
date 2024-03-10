@@ -7,7 +7,7 @@ namespace PopugCommon.KafkaMessages
         public string EventId { get; }
         public DateTime EventDate { get; }
         public string Event { get; set; }
-        public string Version { get; }
+        public string Version { get; set; }
         public object Data { get; }
         public PopugMessage(object data, string e, string version)
         {

@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "users.stream.created" ]
+      "enum": [ "users.stream.updated" ]
     },
     "Version": {
       "type": "string",
@@ -22,7 +22,7 @@
         "UserId": {
           "type": "string"
         },
-        "PublicUserId": {
+        "PublicId": {
           "type": "string"
         },
         "UserName": {
@@ -34,7 +34,7 @@
       },
       "required": [
         "UserId",
-        "PublicUserId",
+        "PublicId",
         "UserName",
         "UserRole"
       ]

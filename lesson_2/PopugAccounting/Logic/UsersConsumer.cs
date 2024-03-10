@@ -2,6 +2,7 @@
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PopugAccounting.Logic
@@ -18,15 +19,16 @@ namespace PopugAccounting.Logic
 
         public AccountingLogic AccountingLogic { get; }
 
-        public async override Task OnMessage(Message<Ignore, string> message)
+        public async override Task OnMessage(PopugMessage popug)
         {
-            var popug = message.Value.FromJson<PopugMessage>();
-
             switch ($"{popug.Event}_{popug.Version}")
             {
                 case Messages.Users.Stream.Created + "_v1":
                 case Messages.Users.Stream.Updated + "_v1":
+                    
+
                     var user = popug.Data.ToString().FromJson<UserStreamEvent>();
+
                     await AccountingLogic.CreateBalance(user.UserId);
                     break;
             }
