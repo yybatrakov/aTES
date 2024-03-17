@@ -6,16 +6,20 @@
 
   <ItemGroup>
     <None Remove="SchemaRegistry\balance.transaction.stream_v1.json" />
-    <None Remove="SchemaRegistry\task.assigned_v1.json" />
+    <None Remove="SchemaRegistry\task.added_v1.json" />
     <None Remove="SchemaRegistry\task.completed_v1.json" />
     <None Remove="SchemaRegistry\task.payment.processed_v1.json" />
     <None Remove="SchemaRegistry\task.stream_v1.json" />
     <None Remove="SchemaRegistry\task.stream_v2.json" />
+    <None Remove="SchemaRegistry\taskcosts.stream_v1.json" />
     <None Remove="SchemaRegistry\tasks.reassigned_v1.json" />
     <None Remove="SchemaRegistry\users.stream_v1.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="SchemaRegistry\taskcosts.stream_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="SchemaRegistry\task.stream_v2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -28,7 +32,7 @@
     <Resource Include="SchemaRegistry\task.completed_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="SchemaRegistry\task.assigned_v1.json">
+    <Resource Include="SchemaRegistry\task.added_v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="SchemaRegistry\tasks.reassigned_v1.json">

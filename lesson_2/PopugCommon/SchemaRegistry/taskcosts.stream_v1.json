@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "task.assigned" ]
+      "enum": [ "taskcosts.created" ]
     },
     "Version": {
       "type": "string",
@@ -22,13 +22,17 @@
         "PublicId": {
           "type": "string"
         },
-        "AssignedUserId": {
-          "type": "string"
+        "Fee": {
+          "type": "integer"
+        },
+        "Amount": {
+          "type": "integer"
         }
       },
       "required": [
         "PublicId",
-        "AssignedUserId"
+        "Fee",
+        "Amount"
       ]
     }
   },

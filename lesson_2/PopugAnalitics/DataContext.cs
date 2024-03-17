@@ -13,8 +13,31 @@
 
     }
 
+    public class TaskDb
+    {
+        public int Id { get; set; }
+        public string PublicId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public bool IsCompleted { get; set; } = false;
+        public string AssignedUserId { get; set; }
+        public int Fee { get; set; }
+        public int Amount { get; set; }
+
+    }
+    public class TaskEventsDb
+    {
+        public string Event { get; set; }
+        public DateTime EventDate { get; set; }
+        public string PublicId { get; set; }
+    }
+
     public class DataContext : DbContext
     {
+        public DbSet<TaskDb> PopugTasks { get; set; } = null;
+
+        public DbSet<TaskEventsDb> PopugTaskEvents { get; set; } = null;
+
         public DbSet<BalanceTransactionDb> BalanceTransactionsLog { get; set; } = null;
         
         public DataContext(DbContextOptions options) : base(options)

@@ -1,6 +1,6 @@
 ﻿namespace PopugTaskTracker
 {
-    public class TaskAssignedEvent
+    public class TaskAddedEvent
     {
         public string PublicId { get; set; }
         public string AssignedUserId { get; set; }
