@@ -36,12 +36,13 @@ namespace AuthorizationServer.Controllers
 
             result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
+                PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Operation.Add).ToJson());
+            }, KafkaMessages.Users.Stream.Created, "v1"));
 
             return identity;
         }
@@ -52,12 +53,13 @@ namespace AuthorizationServer.Controllers
             await userManager.RemoveFromRolesAsync(identity, userRoles);
             var result = await userManager.AddToRoleAsync(identity, role);
 
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
+                PublicId = identity.Id,
                 UserName = identity.UserName,
                 UserRole = role
-            }, Operation.Update).ToJson());
+            }, KafkaMessages.Users.Stream.Updated, "v1"));
 
             return identity;
         }
@@ -65,12 +67,13 @@ namespace AuthorizationServer.Controllers
         {
             var identity = await dataContext.Users.Where(u => u.UserName == AuthUserHelper.GetUserFromBeak(userBeak)).FirstOrDefaultAsync();
             var result = await userManager.DeleteAsync(identity);
-            Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new StreamMessage<User>(new User()
+            await Kafka.Produce(KafkaTopics.UsersStream, identity.Id, new PopugMessage(new UserStreamEvent()
             {
                 UserId = identity.Id,
-                UserName = identity.UserName
-            }, Operation.Delete).ToJson());
-
+                PublicId = identity.Id,
+                UserName = identity.UserName,
+                UserRole = string.Empty
+            }, KafkaMessages.Users.Stream.Deleted, "v1"));
             return identity;
         }
     }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PopugCommon.KafkaMessages
+﻿namespace PopugCommon.KafkaMessages
 {
     public static class KafkaTopics
     {
-        public static string UsersStream = "users-stream";
-        public static string TasksStream = "tasks-stream";
-        public static string TasksEvents = "tasks-events";
+        public static string UsersStream = "users.stream";
+        public static string TasksStream = "tasks.stream";
+        public static string TasksLifecycle = "tasks.lifecycle";
+        public static string BalanceTransactionStream = "balance.transaction.stream";
+        public static string BalanceLifecycle = "balance.lifecycle";
 
     }
 }

@@ -1,0 +1,70 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "EventId": {
+      "type": "string"
+    },
+    "EventDate": {
+      "type": "string"
+    },
+    "Event": {
+      "type": "string",
+      "enum": [ "tasks.reassigned" ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [ "v1" ]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "Tasks": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "PublicId": {
+                  "type": "string"
+                },
+                "AssignedUserId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "PublicId",
+                "AssignedUserId"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "PublicId": {
+                  "type": "string"
+                },
+                "AssignedUserId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "PublicId",
+                "AssignedUserId"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "Tasks"
+      ]
+    }
+  },
+  "required": [
+    "EventId",
+    "EventDate",
+    "Event",
+    "Version",
+    "Data"
+  ]
+}

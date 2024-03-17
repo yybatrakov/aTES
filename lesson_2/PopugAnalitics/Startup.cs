@@ -34,7 +34,10 @@ namespace PopugAnalitics
                 options.UseSqlite(Configuration.GetConnectionString("SqliteDb"));
             }, ServiceLifetime.Singleton);
 
-            services.AddSingleton<KafkaConsumer, TasksEventsConsumer>();
+            services.AddTransient<AnaliticsLogic>();
+            services.AddSingleton<KafkaConsumer, BalanceTransactionStreamConsumer>();
+
+            services.AddHostedService<KafkaConsumersStartupService>();
 
             services.AddHostedService<KafkaConsumersStartupService>();
 

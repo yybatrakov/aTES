@@ -1,0 +1,54 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "EventId": {
+      "type": "string"
+    },
+    "EventDate": {
+      "type": "string"
+    },
+    "Event": {
+      "type": "string",
+      "enum": [ "balance.transaction.stream.created" ]
+    },
+    "Version": {
+      "type": "string",
+      "enum": [ "v1" ]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "UserId": {
+          "type": "string"
+        },
+        "Money": {
+          "type": "integer"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "Date": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "UserId",
+        "Money",
+        "Type",
+        "Date"
+      ]
+    }
+  },
+  "required": [
+    "EventId",
+    "EventDate",
+    "Event",
+    "Version",
+    "Data"
+  ]
+}

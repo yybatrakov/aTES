@@ -1,13 +1,31 @@
 ﻿namespace PopugTaskTracker
 {
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    using PopugCommon.KafkaMessages;
+
+    public class TaskDb
+    {
+        public int Id { get; set; }
+        public string PublicId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public bool IsCompleted { get; set; } = false;
+        public string AssignedUserId { get; set; }
+        public string JiraId { get; set; }
+        
+    }
+
+    public class UserDb
+    {
+        public int Id { get; set; }
+        public string PublicId { get; set; }
+        public string UserName { get; set; }
+        public string UserRole { get; set; }
+    }
 
     public class DataContext : DbContext
     {
-        public DbSet<PopugTask> PopugTasks { get; set; } = null;
-        public DbSet<User> Users { get; set; } = null;
+        public DbSet<TaskDb> PopugTasks { get; set; } = null;
+        public DbSet<UserDb> Users { get; set; } = null;
 
         public DataContext(DbContextOptions options) : base(options)
         {

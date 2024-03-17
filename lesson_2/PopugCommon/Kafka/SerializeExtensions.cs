@@ -27,4 +27,5 @@ namespace PopugCommon.Kafka
             return DeserializeObject<T>(data);
         }
     }
+
 }

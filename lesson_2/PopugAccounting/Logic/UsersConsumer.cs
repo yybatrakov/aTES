@@ -2,19 +2,22 @@
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
-namespace PopugTaskTracker.Logic
+namespace PopugAccounting.Logic
 {
     //Вынести в Common
     public class UsersConsumer : KafkaConsumer
     {
-        private readonly UsersLogic usersLogic;
 
-        public UsersConsumer(UsersLogic usersLogic) {
-            this.usersLogic = usersLogic;
+        public UsersConsumer(AccountingLogic accountingLogic)
+        {
+            AccountingLogic = accountingLogic;
         }
         public override string MessageType => KafkaTopics.UsersStream;
+
+        public AccountingLogic AccountingLogic { get; }
 
         public async override Task OnMessage(PopugMessage popug)
         {
@@ -22,12 +25,9 @@ namespace PopugTaskTracker.Logic
             {
                 case KafkaMessages.Users.Stream.Created + "_v1":
                 case KafkaMessages.Users.Stream.Updated + "_v1":
-                    await usersLogic.AddOrUpdate(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
+                    var user = popug.Data.ToString().FromJson<UserStreamEvent>();
+                    await AccountingLogic.CreateBalance(user.PublicId);
                     break;
-                case KafkaMessages.Users.Stream.Deleted + "_v1":
-                    await usersLogic.Delete(SerializeExtensions.FromJson<UserStreamEvent>(popug.Data.ToString()));
-                    break;
-                default: throw new NotImplementedException();
             }
         }
     }

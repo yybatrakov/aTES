@@ -5,10 +5,49 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SchemaRegistry\balance.transaction.stream_v1.json" />
+    <None Remove="SchemaRegistry\task.assigned_v1.json" />
+    <None Remove="SchemaRegistry\task.completed_v1.json" />
+    <None Remove="SchemaRegistry\task.payment.processed_v1.json" />
+    <None Remove="SchemaRegistry\task.stream_v1.json" />
+    <None Remove="SchemaRegistry\task.stream_v2.json" />
+    <None Remove="SchemaRegistry\tasks.reassigned_v1.json" />
+    <None Remove="SchemaRegistry\users.stream_v1.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="SchemaRegistry\task.stream_v2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\task.payment.processed_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\balance.transaction.stream_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\task.completed_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\task.assigned_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\tasks.reassigned_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\task.stream_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="SchemaRegistry\users.stream_v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />

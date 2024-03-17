@@ -1,13 +1,11 @@
-﻿using Confluent.Kafka;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PopugCommon.Kafka;
 using PopugCommon.KafkaMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static PopugTaskTracker.DataContext;
 
 namespace PopugTaskTracker.Logic
 {
@@ -19,27 +17,28 @@ namespace PopugTaskTracker.Logic
         {
             this.dataContext = dataContext;
         }
-        public async Task<List<PopugTask>> Get()
+        public async Task<List<TaskDb>> Get()
         {
             return await dataContext.PopugTasks.ToListAsync();
         }
-        public async Task<PopugTask> Get(int taskId)
+        public async Task<TaskDb> Get(int taskId)
         {
             return await dataContext.PopugTasks.Where(t => t.Id == taskId).FirstOrDefaultAsync();
         }
-        public async Task<List<PopugTask>> Get(string userId)
+        public async Task<List<TaskDb>> Get(string userId)
         {
             return await dataContext.PopugTasks.Where(t => t.AssignedUserId == userId).ToListAsync();
         }
 
-        public async Task<PopugTask> Add(PopugTask task)
+        public async Task<TaskDb> Add(TaskDb task)
         {
+
             dataContext.PopugTasks.Add(task);
             dataContext.SaveChanges();
 
             return await Get(task.Id);
         }
-        public async Task<PopugTask> Update(PopugTask task)
+        public async Task<TaskDb> Update(TaskDb task)
         {
             dataContext.PopugTasks.Update(task);
             dataContext.SaveChanges();
@@ -47,54 +46,59 @@ namespace PopugTaskTracker.Logic
             return await Get(task.Id);
         }
 
-        public async Task<PopugTask> CompleteTask(int taskId)
+        public async Task<TaskDb> CompleteTask(int taskId)
         {
             var task = await Get(taskId);
             task.IsCompleted= true;
             await Update(task);
-            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Update).ToJson());
-            Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskCompleted).ToJson());
+            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v2"));
+            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskCompletedEvent() { PublicId = task.PublicId}, KafkaMessages.Tasks.Completed, "v1"));
             return task;
         }
 
-        public async Task<PopugTask> CreateTask(PopugTask task)
+        public async Task<TaskDb> CreateTask(TaskDb task)
         {
-            task = (await AssignTasks(new List<PopugTask> { task })).Single();
+            if (Regex.IsMatch(task.Title, @"[\]\[]"))
+                throw new Exception("Incorrect charactrers");
+
+            task = (await AssignTasks(new List<TaskDb> { task })).Single();
             await Update(task);
-            Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Add).ToJson());
-            Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskAssigned).ToJson());
+            await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Created, "v2"));
+            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskAssignedEvent() { PublicId = task.PublicId, AssignedUserId = task.AssignedUserId }, KafkaMessages.Tasks.Assigned, "v1"));
             return task;
         }
 
-        public async Task<List<PopugTask>> ReassignTasks()
+        public async Task<List<TaskDb>> ReassignTasks()
         {
             var tasks = await AssignTasks(await GetTasksForAssign());
             foreach (var task in tasks)
             {
                 await Update(task);
-                Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new StreamMessage<PopugTask>(task, Operation.Update).ToJson());
-                Kafka.Produce(KafkaTopics.TasksEvents, task.Id.ToString(), new EventMessage<PopugTask>(task, Events.TaskAssigned).ToJson());
+                await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v2"));
             }
+            
+            var e = new TasksReassignedEvent() { Tasks = tasks.Select(t => new TaskAssignedEvent() { PublicId = t.PublicId, AssignedUserId = t.AssignedUserId }).ToList() };
+            await Kafka.Produce(KafkaTopics.TasksLifecycle, DateTime.Now.Ticks.ToString() , new PopugMessage(e, KafkaMessages.Tasks.ReAssigned, "v1"));
             return tasks;
         }
-        private async Task<List<PopugTask>> AssignTasks(List<PopugTask> tasks)
+        private async Task<List<TaskDb>> AssignTasks(List<TaskDb> tasks)
         {
             var user = await GetUsersForAssign();
             var rng = new Random();
             foreach (var task in tasks)
             {
-                task.AssignedUserId = user[rng.Next(user.Count)].UserId;
+                task.AssignedUserId = user[rng.Next(user.Count)].PublicId;
             }
             return tasks;
         }
-        private async Task<List<User>> GetUsersForAssign()
+        private async Task<List<UserDb>> GetUsersForAssign()
         {
             var excludeRoles = new[] { "Admin", "Manager" };
 
             return await dataContext.Users.Where(u => !excludeRoles.Contains(u.UserRole)).ToListAsync();
 
         }
-        private async Task<List<PopugTask>> GetTasksForAssign()
+        private async Task<List<TaskDb>> GetTasksForAssign()
         {
             return await dataContext.PopugTasks.Where(t=> !t.IsCompleted).ToListAsync();
         }
