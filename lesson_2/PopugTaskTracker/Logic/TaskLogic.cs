@@ -64,7 +64,7 @@ namespace PopugTaskTracker.Logic
             task = (await AssignTasks(new List<TaskDb> { task })).Single();
             await Update(task);
             await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Created, "v2"));
-            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskAssignedEvent() { PublicId = task.PublicId, AssignedUserId = task.AssignedUserId }, KafkaMessages.Tasks.Assigned, "v1"));
+            await Kafka.Produce(KafkaTopics.TasksLifecycle, task.Id.ToString(), new PopugMessage(new TaskAddedEvent() { PublicId = task.PublicId, AssignedUserId = task.AssignedUserId }, KafkaMessages.Tasks.Added, "v1"));
             return task;
         }
 
@@ -77,7 +77,7 @@ namespace PopugTaskTracker.Logic
                 await Kafka.Produce(KafkaTopics.TasksStream, task.Id.ToString(), new PopugMessage(task, KafkaMessages.Tasks.Stream.Updated, "v2"));
             }
             
-            var e = new TasksReassignedEvent() { Tasks = tasks.Select(t => new TaskAssignedEvent() { PublicId = t.PublicId, AssignedUserId = t.AssignedUserId }).ToList() };
+            var e = new TasksReassignedEvent() { Tasks = tasks.Select(t => new TasksReassignedEventItem() { PublicId = t.PublicId, AssignedUserId = t.AssignedUserId }).ToList() };
             await Kafka.Produce(KafkaTopics.TasksLifecycle, DateTime.Now.Ticks.ToString() , new PopugMessage(e, KafkaMessages.Tasks.ReAssigned, "v1"));
             return tasks;
         }

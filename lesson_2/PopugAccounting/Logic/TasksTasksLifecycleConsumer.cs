@@ -22,8 +22,8 @@ namespace PopugAccounting.Logic
         {
             switch ($"{popug.Event}_{popug.Version}")
             {
-                case KafkaMessages.Tasks.Assigned + "_v1":
-                    var taskAssigned = SerializeExtensions.FromJson<TaskAssignedEvent>(popug.Data.ToString());
+                case KafkaMessages.Tasks.Added + "_v1":
+                    var taskAssigned = SerializeExtensions.FromJson<TaskAddedEvent>(popug.Data.ToString());
                     var task = await AccountingLogic.GetTask(taskAssigned.PublicId);
                     if (task == null)
                     {

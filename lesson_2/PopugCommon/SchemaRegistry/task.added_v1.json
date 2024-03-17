@@ -10,7 +10,7 @@
     },
     "Event": {
       "type": "string",
-      "enum": [ "task.assigned" ]
+      "enum": [ "task.added" ]
     },
     "Version": {
       "type": "string",
