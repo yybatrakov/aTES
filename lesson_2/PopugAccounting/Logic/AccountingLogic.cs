@@ -55,6 +55,9 @@ namespace PopugAccounting.Logic
                 taskDb.IsCompleted = task.IsCompleted;
                 await dataContext.PopugTasks.AddAsync(taskDb);
                 await dataContext.SaveChangesAsync();
+
+                var taskCostsStreamEvent = new TaskCostsStreamEvent() {PublicId = taskDb.PublicId, Fee = taskDb.Fee, Amount = taskDb.Amount  };
+                await Kafka.Produce(KafkaTopics.TaskCostsStream, task.PublicId, new PopugMessage(taskCostsStreamEvent, KafkaMessages.TaskCosts.Stream.Created, "v1"));
             }
 
             return await GetTask(task.Id);

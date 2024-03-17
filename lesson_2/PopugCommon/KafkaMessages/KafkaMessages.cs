@@ -16,6 +16,13 @@ namespace PopugCommon.KafkaMessages
             public const string Added = "task.assigned";
             public const string ReAssigned = "tasks.reassigned";
         }
+        public static class TaskCosts
+        {
+            public static class Stream
+            {
+                public const string Created = "taskcosts.stream.created";
+            }
+        }
         public static class Balances
         {
             public static class Stream
